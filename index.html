@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lord Bluetooth 🎵</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: linear-gradient(135deg, #1a0b2e 0%, #0d1b2a 50%, #1b0b2e 100%);
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a0b2e 40%, #0d1b2a 70%, #1a0b2e 100%);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -19,32 +19,31 @@
       font-family: 'Press Start 2P', monospace;
       color: #fff;
       overflow: hidden;
+      padding: 20px;
     }
 
-    /* Stars background */
+    /* Stars */
     body::before {
       content: '';
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: 
-        radial-gradient(2px 2px at 20px 30px, #fff, transparent),
-        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
-        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-        radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
-        radial-gradient(1px 1px at 230px 80px, #fff, transparent),
-        radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
-        radial-gradient(1px 1px at 400px 60px, #fff, transparent),
-        radial-gradient(2px 2px at 500px 200px, rgba(255,255,255,0.8), transparent),
-        radial-gradient(1px 1px at 600px 100px, #fff, transparent),
-        radial-gradient(2px 2px at 700px 180px, rgba(255,255,255,0.6), transparent);
-      background-size: 800px 300px;
-      animation: starScroll 60s linear infinite;
+        radial-gradient(1px 1px at 50px 80px, #fff, transparent),
+        radial-gradient(1px 1px at 150px 200px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 250px 50px, #1084d0, transparent),
+        radial-gradient(1px 1px at 350px 300px, #fff, transparent),
+        radial-gradient(2px 2px at 450px 150px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 550px 80px, #ff00ff, transparent),
+        radial-gradient(2px 2px at 650px 250px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 750px 100px, #fff, transparent);
+      background-size: 800px 350px;
+      animation: starScroll 90s linear infinite;
       z-index: 0;
     }
 
     @keyframes starScroll {
       from { background-position: 0 0; }
-      to { background-position: 800px 300px; }
+      to { background-position: 800px 350px; }
     }
 
     .container {
@@ -53,7 +52,32 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 15px;
+      width: 100%;
+      max-width: 760px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s linear infinite;
+      text-shadow: none;
+      filter: drop-shadow(0 0 20px rgba(255,0,255,0.5));
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
     }
 
     /* Winamp Window */
@@ -64,9 +88,8 @@
       border-left-color: #fff;
       border-right-color: #404040;
       border-bottom-color: #404040;
-      box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf, 4px 4px 0 rgba(0,0,0,0.5);
-      width: 700px;
-      max-width: 95vw;
+      box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf, 6px 6px 0 rgba(0,0,0,0.4);
+      width: 100%;
     }
 
     .winamp-titlebar {
@@ -80,7 +103,7 @@
 
     .winamp-title {
       color: #fff;
-      font-size: 11px;
+      font-size: 10px;
       font-family: 'Press Start 2P', monospace;
       text-shadow: 1px 1px 0 #000;
     }
@@ -105,6 +128,7 @@
       align-items: center;
       justify-content: center;
       color: #000;
+      font-family: monospace;
     }
 
     .winamp-btn:active {
@@ -114,7 +138,7 @@
       border-bottom-color: #fff;
     }
 
-    /* Main content area */
+    /* Main content */
     .winamp-main {
       display: flex;
       background: #000;
@@ -124,7 +148,8 @@
 
     /* Visualization */
     .vis-container {
-      width: 200px;
+      width: 220px;
+      min-width: 220px;
       height: 150px;
       background: #000;
       border: 2px solid #808080;
@@ -139,6 +164,7 @@
     #visualizer {
       width: 100%;
       height: 100%;
+      display: block;
     }
 
     /* Playlist */
@@ -149,11 +175,12 @@
     }
 
     .playlist-header {
-      background: #808080;
+      background: linear-gradient(90deg, #808080, #a0a0a0);
       padding: 2px 5px;
       font-size: 8px;
       color: #fff;
       text-shadow: 1px 1px 0 #000;
+      font-family: 'Press Start 2P', monospace;
     }
 
     .playlist {
@@ -173,7 +200,8 @@
       font-size: 8px;
       color: #00ff00;
       cursor: pointer;
-      font-family: monospace;
+      font-family: 'VT323', monospace;
+      font-size: 14px;
     }
 
     .playlist-item:hover, .playlist-item.active {
@@ -182,14 +210,115 @@
     }
 
     .playlist-item.active::before {
-      content: '>';
+      content: '▶ ';
     }
+
+    /* Progress bar */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #808080;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff00, #80ff80);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .progress-bar:hover .progress-fill {
+      background: linear-gradient(90deg, #ffff00, #80ff80);
+    }
+
+    /* Track info */
+    .track-info {
+      background: #000;
+      border: 2px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      padding: 5px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .track-name {
+      font-size: 9px;
+      color: #ff9900;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      animation: neonPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes neonPulse {
+      0%, 100% { text-shadow: 0 0 5px #ff9900; }
+      50% { text-shadow: 0 0 20px #ff9900, 0 0 30px #ff6600; }
+    }
+
+    .track-time {
+      font-size: 11px;
+      color: #ff9900;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      background: #000;
+      padding: 2px 8px;
+      border: 1px inset #808080;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    /* EQ */
+    .eq-container {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      padding: 4px 5px;
+      background: #c0c0c0;
+    }
+
+    .eq-bar {
+      width: 8px;
+      height: 35px;
+      background: #000;
+      border: 1px solid #808080;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eq-fill {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(to top, #00ff00 0%, #80ff00 50%, #ffff00 80%, #ff0000 100%);
+      animation: eqDance 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes eqDance {
+      from { height: 15%; }
+      to { height: 90%; }
+    }
+
+    .eq-bar:nth-child(1) .eq-fill { animation-delay: 0s; animation-duration: 0.35s; }
+    .eq-bar:nth-child(2) .eq-fill { animation-delay: 0.05s; animation-duration: 0.42s; }
+    .eq-bar:nth-child(3) .eq-fill { animation-delay: 0.1s; animation-duration: 0.38s; }
+    .eq-bar:nth-child(4) .eq-fill { animation-delay: 0.08s; animation-duration: 0.45s; }
+    .eq-bar:nth-child(5) .eq-fill { animation-delay: 0.03s; animation-duration: 0.33s; }
+    .eq-bar:nth-child(6) .eq-fill { animation-delay: 0.12s; animation-duration: 0.41s; }
+    .eq-bar:nth-child(7) .eq-fill { animation-delay: 0.07s; animation-duration: 0.37s; }
+    .eq-bar:nth-child(8) .eq-fill { animation-delay: 0.02s; animation-duration: 0.44s; }
+    .eq-bar:nth-child(9) .eq-fill { animation-delay: 0.09s; animation-duration: 0.36s; }
+    .eq-bar:nth-child(10) .eq-fill { animation-delay: 0.04s; animation-duration: 0.39s; }
 
     /* Controls */
     .controls {
       display: flex;
       justify-content: center;
-      gap: 5px;
+      gap: 4px;
       padding: 5px;
       background: #c0c0c0;
     }
@@ -204,10 +333,11 @@
       border-right-color: #404040;
       border-bottom-color: #404040;
       cursor: pointer;
-      font-size: 10px;
+      font-size: 11px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: monospace;
     }
 
     .ctrl-btn:active {
@@ -217,89 +347,17 @@
       border-bottom-color: #fff;
     }
 
-    /* Track info */
-    .track-info {
-      background: #000;
-      border: 2px solid #808080;
-      border-top-color: #fff;
-      border-left-color: #fff;
-      border-right-color: #404040;
-      border-bottom-color: #404040;
-      padding: 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .track-name {
-      font-size: 8px;
-      color: #ff9900;
-      font-family: monospace;
-    }
-
-    .track-time {
-      font-size: 10px;
-      color: #ff9900;
-      font-family: monospace;
-      background: #000;
-      padding: 2px 5px;
-      border: 1px inset #808080;
-    }
-
-    /* Progress bar */
-    .progress-bar {
-      width: 100%;
-      height: 4px;
-      background: #808080;
-      cursor: pointer;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #00ff00;
-      width: 0%;
-    }
-
-    /* Lyrics display */
-    .lyrics-container {
-      width: 700px;
-      max-width: 95vw;
-      background: rgba(0,0,0,0.8);
-      border: 2px solid #1084d0;
-      border-radius: 5px;
-      padding: 15px;
-      text-align: center;
-    }
-
-    .lyrics {
-      font-size: 14px;
-      min-height: 80px;
+    .ctrl-btn.active {
+      background: #000080;
       color: #fff;
-      text-shadow: 0 0 10px #1084d0, 0 0 20px #1084d0;
-      line-height: 1.8;
-      transition: all 0.3s;
     }
 
-    .lyrics .current {
-      color: #ffff00;
-      text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
-      font-size: 18px;
-    }
-
-    .lyrics .upcoming {
-      color: #808080;
-    }
-
-    .lyrics .past {
-      color: #404040;
-    }
-
-    /* Volume slider */
+    /* Volume */
     .volume-container {
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 5px;
+      padding: 4px 5px;
       background: #c0c0c0;
     }
 
@@ -328,45 +386,96 @@
       border-bottom-color: #404040;
     }
 
-    /* EQ */
-    .eq-container {
-      display: flex;
-      justify-content: center;
-      gap: 3px;
-      padding: 5px;
-      background: #c0c0c0;
-    }
-
-    .eq-bar {
-      width: 8px;
-      height: 40px;
-      background: #808080;
-      border: 1px inset #fff;
-      position: relative;
-    }
-
-    .eq-fill {
-      position: absolute;
-      bottom: 0;
+    /* ===== KARAOKE LYRICS SECTION ===== */
+    .karaoke-container {
       width: 100%;
-      background: #00ff00;
-      animation: eqDance 0.5s ease-in-out infinite alternate;
+      background: rgba(0, 0, 0, 0.85);
+      border: 3px solid;
+      border-image: linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff) 1;
+      padding: 20px 25px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    @keyframes eqDance {
-      from { height: 20%; }
-      to { height: 80%; }
+    .karaoke-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, #ff00ff, transparent);
+      animation: scanLine 3s linear infinite;
     }
 
-    .eq-bar:nth-child(2) .eq-fill { animation-delay: 0.1s; }
-    .eq-bar:nth-child(3) .eq-fill { animation-delay: 0.2s; }
-    .eq-bar:nth-child(4) .eq-fill { animation-delay: 0.15s; }
-    .eq-bar:nth-child(5) .eq-fill { animation-delay: 0.25s; }
+    @keyframes scanLine {
+      0% { top: 0; opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .karaoke-label {
+      font-size: 8px;
+      color: #808080;
+      margin-bottom: 10px;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    #karaokeDisplay {
+      font-family: 'VT323', monospace;
+      font-size: 32px;
+      min-height: 80px;
+      line-height: 1.4;
+      letter-spacing: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px 12px;
+    }
+
+    .kw {
+      display: inline-block;
+      transition: all 0.08s ease-out;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    .kw.past {
+      color: #404040;
+      text-shadow: none;
+    }
+
+    .kw.current {
+      color: #fff;
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+      transform: scale(1.15);
+    }
+
+    .kw.upcoming {
+      color: #606060;
+      text-shadow: none;
+    }
+
+    /* Word type colors */
+    .kw.costco.current { color: #ff6600; }
+    .kw.gshock.current { color: #ff00ff; }
+    .kw.jeremy.current { color: #00ffff; }
+    .kw.chorus.current { color: #ffff00; }
+    .kw.normal.current { color: #ffffff; }
+
+    .kw.costco.upcoming { color: #8b4500; }
+    .kw.gshock.upcoming { color: #8b008b; }
+    .kw.jeremy.upcoming { color: #008b8b; }
+    .kw.chorus.upcoming { color: #8b8b00; }
+
+    /* ===== VISUALIZER CANVAS ===== */
+    #visualizer {
+      image-rendering: auto;
+    }
 
     /* Credits */
     .credits {
-      font-size: 8px;
-      color: #808080;
+      font-size: 7px;
+      color: #505050;
       text-align: center;
       margin-top: 10px;
     }
@@ -375,34 +484,28 @@
       color: #1084d0;
     }
 
-    /* Retro scanlines */
+    /* Scanlines */
     .scanlines {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: repeating-linear-gradient(
         0deg,
-        rgba(0,0,0,0.15),
-        rgba(0,0,0,0.15) 1px,
+        rgba(0,0,0,0.1),
+        rgba(0,0,0,0.1) 1px,
         transparent 1px,
-        transparent 2px
+        transparent 3px
       );
       pointer-events: none;
       z-index: 1000;
     }
 
-    /* Winamp 3D effect for visualization area */
-    #visualizer {
-      image-rendering: pixelated;
-    }
-
-    /* Neon glow on track name */
-    .track-name {
-      animation: neonPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes neonPulse {
-      0%, 100% { text-shadow: 0 0 5px #ff9900; }
-      50% { text-shadow: 0 0 20px #ff9900, 0 0 30px #ff6600; }
+    /* Winamp glow border on vis */
+    .vis-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 30px rgba(16, 132, 208, 0.3);
+      pointer-events: none;
     }
   </style>
 </head>
@@ -410,9 +513,9 @@
   <div class="scanlines"></div>
 
   <div class="container">
-    <h1 style="font-size: 16px; margin-bottom: 10px; text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;">
-      🎵 LORD BLUETOOTH 🎵
-    </h1>
+    <div class="header">
+      <h1>🎵 LORD BLUETOOTH 🎵</h1>
+    </div>
 
     <div class="winamp">
       <div class="winamp-titlebar">
@@ -432,7 +535,7 @@
         <div class="playlist-container">
           <div class="playlist-header">📀 Playlist — 1 item(s)</div>
           <div class="playlist">
-            <div class="playlist-item active" data-src="1983.mp3" data-track="1">▶ 1. 1983 - Lord Bluetooth</div>
+            <div class="playlist-item active" data-src="1983.mp3">▶ 1. 1983 — Lord Bluetooth</div>
           </div>
         </div>
       </div>
@@ -473,14 +576,16 @@
       </div>
     </div>
 
-    <div class="lyrics-container">
-      <div class="lyrics" id="lyrics">
-        <span class="upcoming">Press Play to sing along...</span>
+    <!-- Karaoke Display -->
+    <div class="karaoke-container">
+      <div class="karaoke-label">♫ SING ALONG ♫</div>
+      <div id="karaokeDisplay">
+        <span class="kw upcoming">Press ▶ to sing along...</span>
       </div>
     </div>
 
     <div class="credits">
-      Lord Bluetooth Music Page — Powered by 🎵 and 🪶<br>
+      Lord Bluetooth Music Page<br>
       <a href="https://github.com/jerbotclaw-max/lord-bluetooth-music">View on GitHub</a>
     </div>
   </div>
@@ -490,71 +595,218 @@
   </audio>
 
   <script>
-    // ========== LYRICS DATA ==========
-    const lyricsData = [
-      { time: 0, text: "", type: "start" },
-      { time: 3, text: "Walking down the strip in eighty-three", type: "current" },
-      { time: 7, text: "Neon lights are flickering just for me", type: "current" },
-      { time: 11, text: "Arcade sounds and synthesizers play", type: "current" },
-      { time: 15, text: "California dreaming every single day", type: "current" },
-      { time: 20, text: "", type: "pause" },
-      { time: 22, text: "Boomboxes blast, we're holding sway", type: "current" },
-      { time: 26, text: "Surf's up, handbags, motor bikes", type: "current" },
-      { time: 30, text: "We're living loud and proud today", type: "current" },
-      { time: 35, text: "", type: "pause" },
-      { time: 37, text: "Costco. G-Shock. Jeremy Payne", type: "chorus" },
-      { time: 43, text: "These are the things that drive me insane", type: "chorus" },
-      { time: 48, text: "Costco. G-Shock. Living the dream", type: "chorus" },
-      { time: 53, text: "Jeremy Payne, that's my theme song, it seems", type: "chorus" },
-      { time: 60, text: "", type: "pause" },
-      { time: 65, text: "Sunset boulevard at quarter past eight", type: "current" },
-      { time: 69, text: "Roller rink heroes, don't hesitate", type: "current" },
-      { time: 73, text: "Cassette tapes spinning in the car", type: "current" },
-      { time: 77, text: "Traveling near and throwing it far", type: "current" },
-      { time: 82, text: "", type: "pause" },
-      { time: 84, text: "Boomboxes blast, we're holding sway", type: "current" },
-      { time: 88, text: "Surf's up, handbags, motor bikes", type: "current" },
-      { time: 92, text: "We're living loud and proud today", type: "current" },
-      { time: 97, text: "", type: "pause" },
-      { time: 99, text: "Costco. G-Shock. Jeremy Payne", type: "chorus" },
-      { time: 105, text: "These are the things that drive me insane", type: "chorus" },
-      { time: 110, text: "Costco. G-Shock. Living the dream", type: "chorus" },
-      { time: 115, text: "Jeremy Payne, that's my theme song, it seems", type: "chorus" },
-      { time: 122, text: "", type: "pause" },
-      { time: 125, text: "Eighty-three, it's calling me", type: "bridge" },
-      { time: 130, text: "Back to where we used to be", type: "bridge" },
-      { time: 135, text: "Every beat, every tone", type: "bridge" },
-      { time: 140, text: "This is how we make it home", type: "bridge" },
-      { time: 146, text: "", type: "pause" },
-      { time: 150, text: "Costco. G-Shock. Jeremy Payne", type: "chorus" },
-      { time: 156, text: "These are the things that drive me insane", type: "chorus" },
-      { time: 161, text: "Costco. G-Shock. Living the dream", type: "chorus" },
-      { time: 166, text: "Jeremy Payne, that's my theme song", type: "chorus" },
+    // ===== LYRICS DATA (word-level, from Whisper + audio analysis) =====
+    const LYRICS = [
+      {word:"Buh!",start:0.395,end:2.810,type:"normal"},
+      {word:"Buh!",start:2.810,end:5.666,type:"normal"},
+      {word:"Buh!",start:5.666,end:8.522,type:"normal"},
+      {word:"Buh!",start:8.522,end:11.401,type:"normal"},
+      {word:"Buh!",start:11.401,end:14.187,type:"normal"},
+      {word:"Buh!",start:14.187,end:17.067,type:"normal"},
+      {word:"Walking",start:17.067,end:17.694,type:"normal"},
+      {word:"down",start:17.694,end:18.390,type:"normal"},
+      {word:"the",start:18.390,end:18.994,type:"normal"},
+      {word:"strip",start:18.994,end:19.621,type:"normal"},
+      {word:"in",start:19.621,end:20.294,type:"normal"},
+      {word:"83",start:20.294,end:20.944,type:"normal"},
+      {word:"Me",start:20.944,end:21.455,type:"normal"},
+      {word:"on",start:21.455,end:21.989,type:"normal"},
+      {word:"lights",start:21.989,end:22.547,type:"normal"},
+      {word:"are",start:22.547,end:22.895,type:"normal"},
+      {word:"flickering",start:22.895,end:23.452,type:"normal"},
+      {word:"just",start:23.452,end:23.986,type:"normal"},
+      {word:"for",start:23.986,end:24.497,type:"normal"},
+      {word:"me",start:24.497,end:24.985,type:"normal"},
+      {word:"Arcade",start:24.985,end:25.565,type:"normal"},
+      {word:"sounds",start:25.565,end:26.169,type:"normal"},
+      {word:"and",start:26.169,end:26.749,type:"normal"},
+      {word:"synthesizers",start:26.749,end:27.283,type:"normal"},
+      {word:"play",start:27.283,end:27.910,type:"normal"},
+      {word:"California",start:27.910,end:28.398,type:"normal"},
+      {word:"dreamin",start:28.398,end:28.955,type:"normal"},
+      {word:"every",start:28.955,end:29.675,type:"normal"},
+      {word:"single",start:29.675,end:30.256,type:"normal"},
+      {word:"day",start:30.256,end:30.952,type:"normal"},
+      {word:"Boombox",start:30.952,end:31.579,type:"normal"},
+      {word:"is",start:31.579,end:32.369,type:"normal"},
+      {word:"blast,",start:32.369,end:32.903,type:"normal"},
+      {word:"we're",start:32.903,end:33.646,type:"normal"},
+      {word:"holding",start:33.646,end:34.296,type:"normal"},
+      {word:"sway",start:34.296,end:34.969,type:"normal"},
+      {word:"Surf's",start:34.969,end:35.759,type:"normal"},
+      {word:"up,",start:35.759,end:36.525,type:"normal"},
+      {word:"handbags,",start:36.525,end:37.036,type:"normal"},
+      {word:"motorbikes",start:37.036,end:37.941,type:"normal"},
+      {word:"We're",start:37.941,end:38.586,type:"normal"},
+      {word:"living",start:38.586,end:39.207,type:"normal"},
+      {word:"loud",start:39.207,end:39.828,type:"normal"},
+      {word:"and",start:39.828,end:40.448,type:"normal"},
+      {word:"proud",start:40.448,end:41.069,type:"normal"},
+      {word:"today",start:41.069,end:41.759,type:"normal"},
+      {word:"Costco",start:41.759,end:44.907,type:"costco"},
+      {word:"G-Shock,",start:44.907,end:46.500,type:"gshock"},
+      {word:"Jeremy",start:46.440,end:47.250,type:"jeremy"},
+      {word:"Payne",start:47.229,end:48.000,type:"jeremy"},
+      {word:"These",start:48.000,end:48.556,type:"chorus"},
+      {word:"are",start:48.556,end:49.111,type:"chorus"},
+      {word:"the",start:49.111,end:49.667,type:"chorus"},
+      {word:"things",start:49.667,end:50.000,type:"chorus"},
+      {word:"that",start:50.000,end:50.333,type:"chorus"},
+      {word:"drive",start:50.333,end:50.667,type:"chorus"},
+      {word:"me",start:50.667,end:51.000,type:"chorus"},
+      {word:"insane",start:51.000,end:51.500,type:"chorus"},
+      {word:"Costco",start:51.500,end:51.989,type:"costco"},
+      {word:"G-Shock,",start:51.989,end:52.500,type:"gshock"},
+      {word:"living",start:52.500,end:53.000,type:"chorus"},
+      {word:"the",start:53.000,end:53.333,type:"chorus"},
+      {word:"dream",start:53.333,end:53.833,type:"chorus"},
+      {word:"Jeremy",start:53.833,end:54.167,type:"jeremy"},
+      {word:"Payne,",start:54.167,end:54.833,type:"jeremy"},
+      {word:"that's",start:54.833,end:55.250,type:"chorus"},
+      {word:"my",start:55.250,end:55.667,type:"chorus"},
+      {word:"theme",start:55.667,end:56.000,type:"chorus"},
+      {word:"song",start:56.000,end:56.333,type:"chorus"},
+      {word:"it",start:56.333,end:56.667,type:"chorus"},
+      {word:"seems",start:56.667,end:57.500,type:"chorus"},
+      {word:"Sunset",start:58.000,end:58.667,type:"normal"},
+      {word:"boulevard",start:58.667,end:59.333,type:"normal"},
+      {word:"at",start:59.333,end:59.778,type:"normal"},
+      {word:"quarter",start:59.778,end:60.222,type:"normal"},
+      {word:"past",start:60.222,end:60.667,type:"normal"},
+      {word:"eight",start:60.667,end:61.333,type:"normal"},
+      {word:"Roller",start:62.000,end:62.667,type:"normal"},
+      {word:"rink",start:62.667,end:63.111,type:"normal"},
+      {word:"heroes,",start:63.111,end:63.556,type:"normal"},
+      {word:"don't",start:63.556,end:64.000,type:"normal"},
+      {word:"hesitate",start:64.000,end:65.000,type:"normal"},
+      {word:"Cassette",start:66.000,end:66.667,type:"normal"},
+      {word:"tapes",start:66.667,end:67.111,type:"normal"},
+      {word:"spinning",start:67.111,end:67.556,type:"normal"},
+      {word:"in",start:67.556,end:68.000,type:"normal"},
+      {word:"the",start:68.000,end:68.444,type:"normal"},
+      {word:"car",start:68.444,end:69.000,type:"normal"},
+      {word:"Traveling",start:70.000,end:70.833,type:"normal"},
+      {word:"near",start:70.833,end:71.389,type:"normal"},
+      {word:"and",start:71.389,end:71.944,type:"normal"},
+      {word:"throwing",start:71.944,end:72.500,type:"normal"},
+      {word:"it",start:72.500,end:73.056,type:"normal"},
+      {word:"far",start:73.056,end:73.889,type:"normal"},
+      {word:"Boombox",start:75.000,end:75.667,type:"normal"},
+      {word:"is",start:75.667,end:76.111,type:"normal"},
+      {word:"blast,",start:76.111,end:76.556,type:"normal"},
+      {word:"we're",start:76.556,end:77.000,type:"normal"},
+      {word:"holding",start:77.000,end:77.667,type:"normal"},
+      {word:"sway",start:77.667,end:78.333,type:"normal"},
+      {word:"Surf's",start:79.000,end:79.667,type:"normal"},
+      {word:"up,",start:79.667,end:80.111,type:"normal"},
+      {word:"handbags,",start:80.111,end:80.556,type:"normal"},
+      {word:"motorbikes",start:80.556,end:81.333,type:"normal"},
+      {word:"We're",start:83.000,end:83.667,type:"normal"},
+      {word:"living",start:83.667,end:84.111,type:"normal"},
+      {word:"loud",start:84.111,end:84.556,type:"normal"},
+      {word:"and",start:84.556,end:85.000,type:"normal"},
+      {word:"proud",start:85.000,end:85.444,type:"normal"},
+      {word:"today",start:85.444,end:86.111,type:"normal"},
+      {word:"Costco",start:87.028,end:87.750,type:"costco"},
+      {word:"G-Shock,",start:87.771,end:88.500,type:"gshock"},
+      {word:"Jeremy",start:88.500,end:89.250,type:"jeremy"},
+      {word:"Payne",start:89.234,end:90.000,type:"jeremy"},
+      {word:"These",start:90.000,end:90.667,type:"chorus"},
+      {word:"are",start:90.667,end:91.111,type:"chorus"},
+      {word:"the",start:91.111,end:91.556,type:"chorus"},
+      {word:"things",start:91.556,end:91.997,type:"chorus"},
+      {word:"that",start:91.997,end:92.333,type:"chorus"},
+      {word:"drive",start:92.333,end:92.667,type:"chorus"},
+      {word:"me",start:92.667,end:93.000,type:"chorus"},
+      {word:"insane",start:93.000,end:93.667,type:"chorus"},
+      {word:"Costco",start:93.667,end:93.994,type:"costco"},
+      {word:"G-Shock,",start:93.994,end:94.625,type:"gshock"},
+      {word:"living",start:94.598,end:95.250,type:"chorus"},
+      {word:"the",start:95.250,end:95.583,type:"chorus"},
+      {word:"dream",start:95.583,end:96.083,type:"chorus"},
+      {word:"Jeremy",start:96.083,end:96.417,type:"jeremy"},
+      {word:"Payne,",start:96.417,end:97.083,type:"jeremy"},
+      {word:"that's",start:97.083,end:97.500,type:"chorus"},
+      {word:"my",start:97.500,end:97.917,type:"chorus"},
+      {word:"theme",start:97.917,end:98.333,type:"chorus"},
+      {word:"song",start:98.333,end:98.750,type:"chorus"},
+      {word:"it",start:98.750,end:99.167,type:"chorus"},
+      {word:"seems",start:99.167,end:100.000,type:"chorus"},
+      {word:"83,",start:99.000,end:101.000,type:"bridge"},
+      {word:"it's",start:101.000,end:102.000,type:"bridge"},
+      {word:"calling",start:102.000,end:103.000,type:"bridge"},
+      {word:"me",start:103.000,end:104.000,type:"bridge"},
+      {word:"Back",start:104.000,end:105.000,type:"bridge"},
+      {word:"to",start:105.000,end:105.500,type:"bridge"},
+      {word:"where",start:105.500,end:106.000,type:"bridge"},
+      {word:"we",start:106.000,end:106.500,type:"bridge"},
+      {word:"used",start:106.500,end:107.000,type:"bridge"},
+      {word:"to",start:107.000,end:107.500,type:"bridge"},
+      {word:"be",start:107.500,end:108.000,type:"bridge"},
+      {word:"Every",start:108.000,end:109.000,type:"bridge"},
+      {word:"beat,",start:109.000,end:109.778,type:"bridge"},
+      {word:"every",start:109.778,end:110.556,type:"bridge"},
+      {word:"tone,",start:110.556,end:111.333,type:"bridge"},
+      {word:"this",start:111.333,end:112.111,type:"bridge"},
+      {word:"is",start:112.111,end:112.667,type:"bridge"},
+      {word:"how",start:112.667,end:113.222,type:"bridge"},
+      {word:"we",start:113.222,end:113.778,type:"bridge"},
+      {word:"make",start:113.778,end:114.333,type:"bridge"},
+      {word:"it",start:114.333,end:114.889,type:"bridge"},
+      {word:"home",start:114.889,end:116.000,type:"bridge"},
+      {word:"Costco",start:116.100,end:116.750,type:"costco"},
+      {word:"G-Shock,",start:116.703,end:117.500,type:"gshock"},
+      {word:"Jeremy",start:117.500,end:118.250,type:"jeremy"},
+      {word:"Payne",start:118.190,end:119.000,type:"jeremy"},
+      {word:"These",start:119.000,end:119.500,type:"chorus"},
+      {word:"are",start:119.500,end:120.000,type:"chorus"},
+      {word:"the",start:120.000,end:120.500,type:"chorus"},
+      {word:"things",start:120.500,end:121.000,type:"chorus"},
+      {word:"that",start:121.000,end:121.333,type:"chorus"},
+      {word:"drive",start:121.333,end:121.667,type:"chorus"},
+      {word:"me",start:121.667,end:122.000,type:"chorus"},
+      {word:"insane",start:122.000,end:122.667,type:"chorus"},
+      {word:"Costco",start:122.667,end:123.046,type:"costco"},
+      {word:"G-Shock,",start:123.046,end:123.625,type:"gshock"},
+      {word:"living",start:123.625,end:124.250,type:"chorus"},
+      {word:"the",start:124.250,end:124.542,type:"chorus"},
+      {word:"dream",start:124.542,end:125.000,type:"chorus"},
+      {word:"Jeremy",start:125.000,end:125.458,type:"jeremy"},
+      {word:"Payne,",start:125.458,end:126.083,type:"jeremy"},
+      {word:"that's",start:126.083,end:126.500,type:"chorus"},
+      {word:"my",start:126.500,end:126.917,type:"chorus"},
+      {word:"theme",start:126.917,end:127.333,type:"chorus"},
+      {word:"song",start:127.333,end:127.750,type:"chorus"},
+      {word:"it",start:127.750,end:128.167,type:"chorus"},
+      {word:"seems",start:128.167,end:129.000,type:"chorus"},
+      {word:"This",start:138.000,end:139.000,type:"bridge"},
+      {word:"is",start:139.000,end:139.500,type:"bridge"},
+      {word:"how",start:139.500,end:140.000,type:"bridge"},
+      {word:"we",start:140.000,end:140.500,type:"bridge"},
+      {word:"make",start:140.500,end:141.000,type:"bridge"},
+      {word:"it",start:141.000,end:141.500,type:"bridge"},
+      {word:"home",start:141.500,end:142.000,type:"bridge"},
     ];
 
-    // ========== AUDIO SETUP ==========
+    // ===== AUDIO =====
     const audio = document.getElementById('audioPlayer');
     const playBtn = document.getElementById('playBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const stopBtn = document.getElementById('stopBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
     const trackTime = document.getElementById('trackTime');
     const volumeSlider = document.getElementById('volumeSlider');
-    const lyricsEl = document.getElementById('lyrics');
+    const karaokeDisplay = document.getElementById('karaokeDisplay');
 
     let isPlaying = false;
-    let currentLyricIndex = -1;
+    let currentWordIndex = -1;
+    let karaokeSpans = [];
 
-    // ========== VISUALIZER ==========
+    // ===== VISUALIZER =====
     const canvas = document.getElementById('visualizer');
     const ctx = canvas.getContext('2d');
-    let analyser;
-    let audioContext;
-    let dataArray;
-    let source;
+    let analyser, audioContext, source, dataArray;
 
     function initAudioContext() {
       if (!audioContext) {
@@ -569,55 +821,64 @@
     }
 
     function drawVisualizer() {
-      if (!analyser || !isPlaying) return;
+      if (!analyser || !isPlaying) {
+        // Draw idle state
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawIdleBars();
+        return;
+      }
 
       requestAnimationFrame(drawVisualizer);
-
       analyser.getByteFrequencyData(dataArray);
 
-      // Clear
       ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Retro bars
-      const barCount = 32;
-      const barWidth = canvas.width / barCount - 2;
-      
+      const barCount = 48;
+      const barWidth = canvas.width / barCount - 1;
+
       for (let i = 0; i < barCount; i++) {
-        const value = dataArray[i] || 0;
+        // Weight toward lower freqs for bass
+        const idx = Math.floor(i * dataArray.length / barCount / 2);
+        const value = dataArray[idx] || 0;
         const percent = value / 255;
         const height = percent * canvas.height;
-        
-        // Gradient color based on height
-        const hue = 180 + (percent * 120); // cyan to magenta
-        ctx.fillStyle = `hsl(${hue}, 100%, ${50 + percent * 30}%)`;
-        
-        // Draw bar with glow
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
-        ctx.fillRect(
-          i * (barWidth + 2) + 1,
-          canvas.height - height,
-          barWidth,
-          height
-        );
-      }
 
-      // Add some retro "stars" in background
+        const hue = 180 + (i / barCount) * 120;
+        ctx.fillStyle = `hsl(${hue}, 100%, ${40 + percent * 40}%)`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
+
+        ctx.fillRect(i * (barWidth + 1), canvas.height - height, barWidth, height);
+      }
       ctx.shadowBlur = 0;
-      for (let i = 0; i < 5; i++) {
-        const x = (dataArray[i * 3] || 0) / 255 * canvas.width;
-        const y = (dataArray[i * 7] || 0) / 255 * canvas.height;
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(x, y, 2, 2);
+
+      // Peak line
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height * 0.3);
+      ctx.lineTo(canvas.width, canvas.height * 0.3);
+      ctx.stroke();
+    }
+
+    function drawIdleBars() {
+      ctx.fillStyle = '#111';
+      const barCount = 48;
+      const barWidth = canvas.width / barCount - 1;
+      for (let i = 0; i < barCount; i++) {
+        const h = 5 + Math.sin(Date.now() / 500 + i * 0.3) * 3;
+        ctx.fillRect(i * (barWidth + 1), canvas.height - h, barWidth, h);
       }
     }
 
-    // ========== CONTROLS ==========
+    // ===== CONTROLS =====
     playBtn.addEventListener('click', () => {
       initAudioContext();
       audio.play();
       isPlaying = true;
+      buildKaraokeHTML();
       drawVisualizer();
     });
 
@@ -630,20 +891,15 @@
       audio.pause();
       audio.currentTime = 0;
       isPlaying = false;
-      currentLyricIndex = -1;
-      updateLyrics();
+      currentWordIndex = -1;
+      buildKaraokeHTML();
     });
 
     audio.addEventListener('timeupdate', () => {
-      // Update progress
-      const percent = (audio.currentTime / audio.duration) * 100;
-      progressFill.style.width = percent + '%';
-
-      // Update time display
+      const pct = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = pct + '%';
       trackTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
-
-      // Update lyrics
-      updateLyrics();
+      updateKaraoke();
     });
 
     audio.addEventListener('loadedmetadata', () => {
@@ -652,8 +908,7 @@
 
     progressBar.addEventListener('click', (e) => {
       const rect = progressBar.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      audio.currentTime = percent * audio.duration;
+      audio.currentTime = (e.clientX - rect.left) / rect.width * audio.duration;
     });
 
     volumeSlider.addEventListener('input', (e) => {
@@ -661,80 +916,83 @@
       volumeSlider.style.setProperty('--vol', e.target.value + '%');
     });
 
-    // ========== LYRICS ==========
-    function updateLyrics() {
-      if (!audio.duration) return;
+    // ===== KARAOKE =====
+    function buildKaraokeHTML() {
+      karaokeDisplay.innerHTML = '';
+      karaokeSpans = [];
 
-      const currentTime = audio.currentTime;
+      LYRICS.forEach((w, i) => {
+        const span = document.createElement('span');
+        span.className = `kw ${w.type} ${i < currentWordIndex ? 'past' : i === currentWordIndex ? 'current' : 'upcoming'}`;
+        span.textContent = w.word;
+        span.dataset.index = i;
+        karaokeDisplay.appendChild(span);
+        karaokeSpans.push(span);
+      });
+
+      if (LYRICS.length === 0) {
+        karaokeDisplay.innerHTML = '<span class="kw upcoming">Press ▶ to sing along...</span>';
+      }
+    }
+
+    function updateKaraoke() {
+      const t = audio.currentTime;
+
       let newIndex = -1;
-
-      for (let i = lyricsData.length - 1; i >= 0; i--) {
-        if (currentTime >= lyricsData[i].time) {
+      for (let i = LYRICS.length - 1; i >= 0; i--) {
+        if (t >= LYRICS[i].start) {
           newIndex = i;
           break;
         }
       }
 
-      if (newIndex !== currentLyricIndex) {
-        currentLyricIndex = newIndex;
-        renderLyrics();
+      if (newIndex !== currentWordIndex) {
+        currentWordIndex = newIndex;
+        refreshKaraokeClasses();
+        scrollCurrentIntoView();
       }
     }
 
-    function renderLyrics() {
-      if (currentLyricIndex < 0 || currentLyricIndex >= lyricsData.length) {
-        lyricsEl.innerHTML = '<span class="upcoming">Press Play to sing along...</span>';
-        return;
-      }
-
-      const current = lyricsData[currentLyricIndex];
-      
-      if (!current.text) {
-        lyricsEl.innerHTML = '<span class="current">🎵</span>';
-        return;
-      }
-
-      let html = '';
-      
-      // Past lyrics (up to 2 before)
-      for (let i = Math.max(0, currentLyricIndex - 2); i < currentLyricIndex; i++) {
-        if (lyricsData[i].text) {
-          html += `<span class="past">${lyricsData[i].text}</span><br>`;
+    function refreshKaraokeClasses() {
+      karaokeSpans.forEach((span, i) => {
+        span.classList.remove('past', 'current', 'upcoming');
+        if (i < currentWordIndex) {
+          span.classList.add('past');
+        } else if (i === currentWordIndex) {
+          span.classList.add('current');
+        } else {
+          span.classList.add('upcoming');
         }
-      }
-
-      // Current lyric
-      const cssClass = current.type === 'chorus' ? 'current chorus' : 'current';
-      html += `<span class="${cssClass}">${current.text}</span><br>`;
-
-      // Next 2 lyrics
-      for (let i = currentLyricIndex + 1; i < Math.min(lyricsData.length, currentLyricIndex + 3); i++) {
-        if (lyricsData[i].text) {
-          html += `<span class="upcoming">${lyricsData[i].text}</span><br>`;
-        }
-      }
-
-      lyricsEl.innerHTML = html;
+      });
     }
 
-    function formatTime(seconds) {
-      if (!seconds || isNaN(seconds)) return '0:00';
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    function scrollCurrentIntoView() {
+      const current = karaokeSpans[currentWordIndex];
+      if (current) {
+        current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
 
-    // Init volume
+    function formatTime(s) {
+      if (!s || isNaN(s)) return '0:00';
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    // Init
     volumeSlider.style.setProperty('--vol', '70%');
     audio.volume = 0.7;
 
-    // Resize canvas
     function resizeCanvas() {
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+
+    // Draw idle visualizer initially
+    drawIdleBars();
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -747,6 +1005,7 @@
           initAudioContext();
           audio.play();
           isPlaying = true;
+          buildKaraokeHTML();
           drawVisualizer();
         }
       }
