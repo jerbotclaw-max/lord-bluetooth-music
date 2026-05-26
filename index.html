@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lord Bluetooth 🎵</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: linear-gradient(135deg, #1a0b2e 0%, #0d1b2a 50%, #1b0b2e 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* Stars background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+        radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 230px 80px, #fff, transparent),
+        radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 400px 60px, #fff, transparent),
+        radial-gradient(2px 2px at 500px 200px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 600px 100px, #fff, transparent),
+        radial-gradient(2px 2px at 700px 180px, rgba(255,255,255,0.6), transparent);
+      background-size: 800px 300px;
+      animation: starScroll 60s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes starScroll {
+      from { background-position: 0 0; }
+      to { background-position: 800px 300px; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Winamp Window */
+    .winamp {
+      background: #c0c0c0;
+      border: 2px solid #fff;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf, 4px 4px 0 rgba(0,0,0,0.5);
+      width: 700px;
+      max-width: 95vw;
+    }
+
+    .winamp-titlebar {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      padding: 3px 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: default;
+    }
+
+    .winamp-title {
+      color: #fff;
+      font-size: 11px;
+      font-family: 'Press Start 2P', monospace;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .winamp-buttons {
+      display: flex;
+      gap: 2px;
+    }
+
+    .winamp-btn {
+      width: 16px;
+      height: 14px;
+      background: #c0c0c0;
+      border: 1px solid;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      font-size: 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+    }
+
+    .winamp-btn:active {
+      border-top-color: #404040;
+      border-left-color: #404040;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    /* Main content area */
+    .winamp-main {
+      display: flex;
+      background: #000;
+      padding: 5px;
+      gap: 5px;
+    }
+
+    /* Visualization */
+    .vis-container {
+      width: 200px;
+      height: 150px;
+      background: #000;
+      border: 2px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #visualizer {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Playlist */
+    .playlist-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .playlist-header {
+      background: #808080;
+      padding: 2px 5px;
+      font-size: 8px;
+      color: #fff;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .playlist {
+      flex: 1;
+      background: #000;
+      border: 2px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      overflow-y: auto;
+      max-height: 130px;
+    }
+
+    .playlist-item {
+      padding: 3px 8px;
+      font-size: 8px;
+      color: #00ff00;
+      cursor: pointer;
+      font-family: monospace;
+    }
+
+    .playlist-item:hover, .playlist-item.active {
+      background: #000080;
+      color: #fff;
+    }
+
+    .playlist-item.active::before {
+      content: '>';
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      padding: 5px;
+      background: #c0c0c0;
+    }
+
+    .ctrl-btn {
+      width: 28px;
+      height: 22px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      cursor: pointer;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:active {
+      border-top-color: #404040;
+      border-left-color: #404040;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    /* Track info */
+    .track-info {
+      background: #000;
+      border: 2px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .track-name {
+      font-size: 8px;
+      color: #ff9900;
+      font-family: monospace;
+    }
+
+    .track-time {
+      font-size: 10px;
+      color: #ff9900;
+      font-family: monospace;
+      background: #000;
+      padding: 2px 5px;
+      border: 1px inset #808080;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #808080;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #00ff00;
+      width: 0%;
+    }
+
+    /* Lyrics display */
+    .lyrics-container {
+      width: 700px;
+      max-width: 95vw;
+      background: rgba(0,0,0,0.8);
+      border: 2px solid #1084d0;
+      border-radius: 5px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .lyrics {
+      font-size: 14px;
+      min-height: 80px;
+      color: #fff;
+      text-shadow: 0 0 10px #1084d0, 0 0 20px #1084d0;
+      line-height: 1.8;
+      transition: all 0.3s;
+    }
+
+    .lyrics .current {
+      color: #ffff00;
+      text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
+      font-size: 18px;
+    }
+
+    .lyrics .upcoming {
+      color: #808080;
+    }
+
+    .lyrics .past {
+      color: #404040;
+    }
+
+    /* Volume slider */
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px;
+      background: #c0c0c0;
+    }
+
+    .volume-label {
+      font-size: 8px;
+      color: #000;
+    }
+
+    .volume-slider {
+      width: 80px;
+      height: 4px;
+      appearance: none;
+      background: linear-gradient(to right, #00ff00 var(--vol, 70%), #808080 var(--vol, 70%));
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 10px;
+      height: 16px;
+      background: #c0c0c0;
+      border: 1px solid;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+    }
+
+    /* EQ */
+    .eq-container {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      padding: 5px;
+      background: #c0c0c0;
+    }
+
+    .eq-bar {
+      width: 8px;
+      height: 40px;
+      background: #808080;
+      border: 1px inset #fff;
+      position: relative;
+    }
+
+    .eq-fill {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: #00ff00;
+      animation: eqDance 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes eqDance {
+      from { height: 20%; }
+      to { height: 80%; }
+    }
+
+    .eq-bar:nth-child(2) .eq-fill { animation-delay: 0.1s; }
+    .eq-bar:nth-child(3) .eq-fill { animation-delay: 0.2s; }
+    .eq-bar:nth-child(4) .eq-fill { animation-delay: 0.15s; }
+    .eq-bar:nth-child(5) .eq-fill { animation-delay: 0.25s; }
+
+    /* Credits */
+    .credits {
+      font-size: 8px;
+      color: #808080;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .credits a {
+      color: #1084d0;
+    }
+
+    /* Retro scanlines */
+    .scanlines {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.15),
+        rgba(0,0,0,0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Winamp 3D effect for visualization area */
+    #visualizer {
+      image-rendering: pixelated;
+    }
+
+    /* Neon glow on track name */
+    .track-name {
+      animation: neonPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes neonPulse {
+      0%, 100% { text-shadow: 0 0 5px #ff9900; }
+      50% { text-shadow: 0 0 20px #ff9900, 0 0 30px #ff6600; }
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <div class="container">
+    <h1 style="font-size: 16px; margin-bottom: 10px; text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;">
+      🎵 LORD BLUETOOTH 🎵
+    </h1>
+
+    <div class="winamp">
+      <div class="winamp-titlebar">
+        <span class="winamp-title">Lord Bluetooth — Winamp 2.81</span>
+        <div class="winamp-buttons">
+          <button class="winamp-btn" title="Minimize">_</button>
+          <button class="winamp-btn" title="Maximize">□</button>
+          <button class="winamp-btn" title="Close">×</button>
+        </div>
+      </div>
+
+      <div class="winamp-main">
+        <div class="vis-container">
+          <canvas id="visualizer"></canvas>
+        </div>
+
+        <div class="playlist-container">
+          <div class="playlist-header">📀 Playlist — 1 item(s)</div>
+          <div class="playlist">
+            <div class="playlist-item active" data-src="1983.mp3" data-track="1">▶ 1. 1983 - Lord Bluetooth</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="track-info">
+        <span class="track-name" id="trackName">▶ 1983 — Lord Bluetooth</span>
+        <span class="track-time" id="trackTime">0:00 / 0:00</span>
+      </div>
+
+      <div class="eq-container">
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+        <div class="eq-bar"><div class="eq-fill"></div></div>
+      </div>
+
+      <div class="controls">
+        <button class="ctrl-btn" id="prevBtn" title="Previous">⏮</button>
+        <button class="ctrl-btn" id="playBtn" title="Play">▶</button>
+        <button class="ctrl-btn" id="pauseBtn" title="Pause">⏸</button>
+        <button class="ctrl-btn" id="stopBtn" title="Stop">⏹</button>
+        <button class="ctrl-btn" id="nextBtn" title="Next">⏭</button>
+      </div>
+
+      <div class="volume-container">
+        <span class="volume-label">🔊</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+      </div>
+    </div>
+
+    <div class="lyrics-container">
+      <div class="lyrics" id="lyrics">
+        <span class="upcoming">Press Play to sing along...</span>
+      </div>
+    </div>
+
+    <div class="credits">
+      Lord Bluetooth Music Page — Powered by 🎵 and 🪶<br>
+      <a href="https://github.com/jerbotclaw-max/lord-bluetooth-music">View on GitHub</a>
+    </div>
+  </div>
+
+  <audio id="audioPlayer" preload="auto">
+    <source src="1983.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // ========== LYRICS DATA ==========
+    const lyricsData = [
+      { time: 0, text: "", type: "start" },
+      { time: 3, text: "Walking down the strip in eighty-three", type: "current" },
+      { time: 7, text: "Neon lights are flickering just for me", type: "current" },
+      { time: 11, text: "Arcade sounds and synthesizers play", type: "current" },
+      { time: 15, text: "California dreaming every single day", type: "current" },
+      { time: 20, text: "", type: "pause" },
+      { time: 22, text: "Boomboxes blast, we're holding sway", type: "current" },
+      { time: 26, text: "Surf's up, handbags, motor bikes", type: "current" },
+      { time: 30, text: "We're living loud and proud today", type: "current" },
+      { time: 35, text: "", type: "pause" },
+      { time: 37, text: "Costco. G-Shock. Jeremy Payne", type: "chorus" },
+      { time: 43, text: "These are the things that drive me insane", type: "chorus" },
+      { time: 48, text: "Costco. G-Shock. Living the dream", type: "chorus" },
+      { time: 53, text: "Jeremy Payne, that's my theme song, it seems", type: "chorus" },
+      { time: 60, text: "", type: "pause" },
+      { time: 65, text: "Sunset boulevard at quarter past eight", type: "current" },
+      { time: 69, text: "Roller rink heroes, don't hesitate", type: "current" },
+      { time: 73, text: "Cassette tapes spinning in the car", type: "current" },
+      { time: 77, text: "Traveling near and throwing it far", type: "current" },
+      { time: 82, text: "", type: "pause" },
+      { time: 84, text: "Boomboxes blast, we're holding sway", type: "current" },
+      { time: 88, text: "Surf's up, handbags, motor bikes", type: "current" },
+      { time: 92, text: "We're living loud and proud today", type: "current" },
+      { time: 97, text: "", type: "pause" },
+      { time: 99, text: "Costco. G-Shock. Jeremy Payne", type: "chorus" },
+      { time: 105, text: "These are the things that drive me insane", type: "chorus" },
+      { time: 110, text: "Costco. G-Shock. Living the dream", type: "chorus" },
+      { time: 115, text: "Jeremy Payne, that's my theme song, it seems", type: "chorus" },
+      { time: 122, text: "", type: "pause" },
+      { time: 125, text: "Eighty-three, it's calling me", type: "bridge" },
+      { time: 130, text: "Back to where we used to be", type: "bridge" },
+      { time: 135, text: "Every beat, every tone", type: "bridge" },
+      { time: 140, text: "This is how we make it home", type: "bridge" },
+      { time: 146, text: "", type: "pause" },
+      { time: 150, text: "Costco. G-Shock. Jeremy Payne", type: "chorus" },
+      { time: 156, text: "These are the things that drive me insane", type: "chorus" },
+      { time: 161, text: "Costco. G-Shock. Living the dream", type: "chorus" },
+      { time: 166, text: "Jeremy Payne, that's my theme song", type: "chorus" },
+    ];
+
+    // ========== AUDIO SETUP ==========
+    const audio = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const trackTime = document.getElementById('trackTime');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const lyricsEl = document.getElementById('lyrics');
+
+    let isPlaying = false;
+    let currentLyricIndex = -1;
+
+    // ========== VISUALIZER ==========
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    let analyser;
+    let audioContext;
+    let dataArray;
+    let source;
+
+    function initAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source = audioContext.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+      }
+    }
+
+    function drawVisualizer() {
+      if (!analyser || !isPlaying) return;
+
+      requestAnimationFrame(drawVisualizer);
+
+      analyser.getByteFrequencyData(dataArray);
+
+      // Clear
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Retro bars
+      const barCount = 32;
+      const barWidth = canvas.width / barCount - 2;
+      
+      for (let i = 0; i < barCount; i++) {
+        const value = dataArray[i] || 0;
+        const percent = value / 255;
+        const height = percent * canvas.height;
+        
+        // Gradient color based on height
+        const hue = 180 + (percent * 120); // cyan to magenta
+        ctx.fillStyle = `hsl(${hue}, 100%, ${50 + percent * 30}%)`;
+        
+        // Draw bar with glow
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
+        ctx.fillRect(
+          i * (barWidth + 2) + 1,
+          canvas.height - height,
+          barWidth,
+          height
+        );
+      }
+
+      // Add some retro "stars" in background
+      ctx.shadowBlur = 0;
+      for (let i = 0; i < 5; i++) {
+        const x = (dataArray[i * 3] || 0) / 255 * canvas.width;
+        const y = (dataArray[i * 7] || 0) / 255 * canvas.height;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x, y, 2, 2);
+      }
+    }
+
+    // ========== CONTROLS ==========
+    playBtn.addEventListener('click', () => {
+      initAudioContext();
+      audio.play();
+      isPlaying = true;
+      drawVisualizer();
+    });
+
+    pauseBtn.addEventListener('click', () => {
+      audio.pause();
+      isPlaying = false;
+    });
+
+    stopBtn.addEventListener('click', () => {
+      audio.pause();
+      audio.currentTime = 0;
+      isPlaying = false;
+      currentLyricIndex = -1;
+      updateLyrics();
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      // Update progress
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = percent + '%';
+
+      // Update time display
+      trackTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
+
+      // Update lyrics
+      updateLyrics();
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      trackTime.textContent = '0:00 / ' + formatTime(audio.duration);
+    });
+
+    progressBar.addEventListener('click', (e) => {
+      const rect = progressBar.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = percent * audio.duration;
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+      audio.volume = e.target.value / 100;
+      volumeSlider.style.setProperty('--vol', e.target.value + '%');
+    });
+
+    // ========== LYRICS ==========
+    function updateLyrics() {
+      if (!audio.duration) return;
+
+      const currentTime = audio.currentTime;
+      let newIndex = -1;
+
+      for (let i = lyricsData.length - 1; i >= 0; i--) {
+        if (currentTime >= lyricsData[i].time) {
+          newIndex = i;
+          break;
+        }
+      }
+
+      if (newIndex !== currentLyricIndex) {
+        currentLyricIndex = newIndex;
+        renderLyrics();
+      }
+    }
+
+    function renderLyrics() {
+      if (currentLyricIndex < 0 || currentLyricIndex >= lyricsData.length) {
+        lyricsEl.innerHTML = '<span class="upcoming">Press Play to sing along...</span>';
+        return;
+      }
+
+      const current = lyricsData[currentLyricIndex];
+      
+      if (!current.text) {
+        lyricsEl.innerHTML = '<span class="current">🎵</span>';
+        return;
+      }
+
+      let html = '';
+      
+      // Past lyrics (up to 2 before)
+      for (let i = Math.max(0, currentLyricIndex - 2); i < currentLyricIndex; i++) {
+        if (lyricsData[i].text) {
+          html += `<span class="past">${lyricsData[i].text}</span><br>`;
+        }
+      }
+
+      // Current lyric
+      const cssClass = current.type === 'chorus' ? 'current chorus' : 'current';
+      html += `<span class="${cssClass}">${current.text}</span><br>`;
+
+      // Next 2 lyrics
+      for (let i = currentLyricIndex + 1; i < Math.min(lyricsData.length, currentLyricIndex + 3); i++) {
+        if (lyricsData[i].text) {
+          html += `<span class="upcoming">${lyricsData[i].text}</span><br>`;
+        }
+      }
+
+      lyricsEl.innerHTML = html;
+    }
+
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Init volume
+    volumeSlider.style.setProperty('--vol', '70%');
+    audio.volume = 0.7;
+
+    // Resize canvas
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (isPlaying) {
+          audio.pause();
+          isPlaying = false;
+        } else {
+          initAudioContext();
+          audio.play();
+          isPlaying = true;
+          drawVisualizer();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
