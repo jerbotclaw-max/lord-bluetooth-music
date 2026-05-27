@@ -394,27 +394,26 @@
     /* ===== KARAOKE LYRICS SECTION ===== */
     .karaoke-container {
       width: 100%;
+      max-height: 160px;
       background: rgba(0, 0, 0, 0.85);
       border: 3px solid;
       border-image: linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff) 1;
-      padding: 20px 25px;
+      padding: 15px 25px;
       text-align: center;
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
+      scroll-behavior: smooth;
     }
 
     .karaoke-container::before {
       content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
+      position: sticky;
+      top: 0;
+      display: block;
       height: 2px;
       background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, #ff00ff, transparent);
-      animation: scanLine 3s linear infinite;
-    }
-
-    @keyframes scanLine {
-      0% { top: 0; opacity: 1; }
-      100% { top: 100%; opacity: 0; }
+      margin-bottom: 10px;
+      z-index: 1;
     }
 
     .karaoke-label {
