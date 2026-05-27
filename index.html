@@ -541,7 +541,7 @@
           <div class="playlist-header">📀 Playlist — 2 item(s)</div>
           <div class="playlist">
             <div class="playlist-item active" data-src="1983.mp3" data-title="1983\n(&quot;Costco, G-Shock, Jeremy Payne&quot;)" onclick="selectTrack(this)">▶ 1. 1983 — Lord Bluetooth</div>
-            <div class="playlist-item" data-src="Lord Bluetooth Anthem.mp3" data-title="Lord Bluetooth Anthem" onclick="selectTrack(this)">  2. Lord Bluetooth Anthem</div>
+            <div class="playlist-item" data-src="Lord Bluetooth Anthem.mp3" data-title="Lord Bluetooth Anthem" onclick="selectTrack(this)">▶ 2. Lord Bluetooth Anthem</div>
           </div>
         </div>
       </div>
@@ -1096,7 +1096,7 @@
       el.classList.add('active');
       const src = el.dataset.src;
       const isAnthem = src.includes('Anthem');
-      const LYRICS_CURRENT = isAnthem ? ANTHEM_LYRICS : LYRICS;
+      currentLyrics = isAnthem ? ANTHEM_LYRICS : LYRICS;
       const title = el.dataset.title || el.textContent.trim().replace('▶ ','').replace('  ','');
       document.getElementById('trackName').textContent = '▶ ' + title;
       document.getElementById('trackTime').textContent = '0:00 / 0:00';
@@ -1120,6 +1120,7 @@
     let isPlaying = false;
     let currentWordIndex = -1;
     let karaokeSpans = [];
+    let currentLyrics = LYRICS; // active lyrics array
 
     // ===== VISUALIZER =====
     const canvas = document.getElementById('visualizer');
@@ -1239,7 +1240,7 @@
       karaokeDisplay.innerHTML = '';
       karaokeSpans = [];
 
-      LYRICS.forEach((w, i) => {
+      currentLyrics.forEach((w, i) => {
         const span = document.createElement('span');
         span.className = `kw ${w.type} ${i < currentWordIndex ? 'past' : i === currentWordIndex ? 'current' : 'upcoming'}`;
         span.textContent = w.word;
@@ -1248,7 +1249,7 @@
         karaokeSpans.push(span);
       });
 
-      if (LYRICS.length === 0) {
+      if (currentLyrics.length === 0) {
         karaokeDisplay.innerHTML = '<span class="kw upcoming">Press ▶ to sing along...</span>';
       }
     }
@@ -1257,8 +1258,8 @@
       const t = audio.currentTime;
 
       let newIndex = -1;
-      for (let i = LYRICS.length - 1; i >= 0; i--) {
-        if (t >= LYRICS[i].start) {
+      for (let i = currentLyrics.length - 1; i >= 0; i--) {
+        if (t >= currentLyrics[i].start) {
           newIndex = i;
           break;
         }
