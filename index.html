@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1983 ("Costco, G-Shock, Jeremy Payne") — Lord Bluetooth 🎵</title>
+  <title>1983</title>
   <meta property="og:title" content="1983 (&quot;Costco, G-Shock, Jeremy Payne&quot;)">
-  <meta property="og:description" content="Lord Bluetooth — sweet retro 80s synth-pop with the Costco, G-Shock, Jeremy Payne chorus">
+  <meta property="og:description" content="Lord Bluetooth music — 1983 and the Anthem">
   <meta property="og:type" content="music.song">
   <meta property="og:url" content="https://jerbotclaw-max.github.io/lord-bluetooth-music/">
   <meta property="og:image" content="https://jerbotclaw-max.github.io/lord-bluetooth-music/cover.png">
@@ -543,7 +543,7 @@
         <div class="playlist-container">
           <div class="playlist-header">📀 Playlist — 2 item(s)</div>
           <div class="playlist">
-            <div class="playlist-item active" data-src="1983.mp3" data-title="1983 (&quot;Costco, G-Shock, Jeremy Payne&quot;)" onclick="selectTrack(this)">▶ 1. 1983 — Lord Bluetooth</div>
+            <div class="playlist-item active" data-src="1983.mp3" data-title="1983" onclick="selectTrack(this)">▶ 1. 1983</div>
             <div class="playlist-item" data-src="Lord Bluetooth Anthem.mp3" data-title="Lord Bluetooth Anthem" onclick="selectTrack(this)">▶ 2. Lord Bluetooth Anthem</div>
           </div>
         </div>
@@ -554,7 +554,7 @@
       </div>
 
       <div class="track-info">
-        <span class="track-name" id="trackName">▶ 1983 — Lord Bluetooth</span>
+        <span class="track-name" id="trackName">▶ 1983</span>
         <span class="track-time" id="trackTime">0:00 / 0:00</span>
       </div>
 
@@ -1102,7 +1102,7 @@
       currentLyrics = isAnthem ? ANTHEM_LYRICS : LYRICS;
       const title = el.dataset.title || el.textContent.trim().replace('▶ ','').replace('  ','');
       document.getElementById('trackName').textContent = '▶ ' + title;
-      document.title = title + ' — Lord Bluetooth 🎵';
+      document.title = title;
       document.getElementById('trackTime').textContent = '0:00 / 0:00';
       document.getElementById('progressFill').style.width = '0%';
       audio.src = src;
