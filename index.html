@@ -221,10 +221,14 @@
     /* Progress bar */
     .progress-bar {
       width: 100%;
-      height: 6px;
-      background: #808080;
+      height: 14px;
+      background: #404040;
       cursor: pointer;
       position: relative;
+      border: 1px solid #808080;
+    }
+    .progress-bar:hover {
+      background: #505050;
     }
 
     .progress-fill {
@@ -527,7 +531,7 @@
         <div class="winamp-buttons">
           <button class="winamp-btn" title="Minimize">_</button>
           <button class="winamp-btn" title="Maximize">□</button>
-          <button class="winamp-btn" title="Close">×</button>
+          <button class="winamp-btn" title="Close" onclick="document.querySelector('.winamp').style.display=document.querySelector('.winamp').style.display=='none'?'block':'none'">×</button>
         </div>
       </div>
 
@@ -539,7 +543,7 @@
         <div class="playlist-container">
           <div class="playlist-header">📀 Playlist — 2 item(s)</div>
           <div class="playlist">
-            <div class="playlist-item active" data-src="1983.mp3" data-title="1983\n(&quot;Costco, G-Shock, Jeremy Payne&quot;)" onclick="selectTrack(this)">▶ 1. 1983 — Lord Bluetooth</div>
+            <div class="playlist-item active" data-src="1983.mp3" data-title="1983 (&quot;Costco, G-Shock, Jeremy Payne&quot;)" onclick="selectTrack(this)">▶ 1. 1983 — Lord Bluetooth</div>
             <div class="playlist-item" data-src="Lord Bluetooth Anthem.mp3" data-title="Lord Bluetooth Anthem" onclick="selectTrack(this)">▶ 2. Lord Bluetooth Anthem</div>
           </div>
         </div>
@@ -1098,6 +1102,7 @@
       currentLyrics = isAnthem ? ANTHEM_LYRICS : LYRICS;
       const title = el.dataset.title || el.textContent.trim().replace('▶ ','').replace('  ','');
       document.getElementById('trackName').textContent = '▶ ' + title;
+      document.title = title + ' — Lord Bluetooth 🎵';
       document.getElementById('trackTime').textContent = '0:00 / 0:00';
       document.getElementById('progressFill').style.width = '0%';
       audio.src = src;
