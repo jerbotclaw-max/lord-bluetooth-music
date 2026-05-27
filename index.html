@@ -1105,6 +1105,11 @@
       audio.load();
       currentWordIndex = -1;
       buildKaraokeHTML();
+      if (isPlaying) {
+        initAudioContext(); // reconnect Web Audio API after track switch
+        audio.play();
+        drawVisualizer();
+      }
     }
 
     const audio = document.getElementById('audioPlayer');
@@ -1121,6 +1126,7 @@
     let currentWordIndex = -1;
     let karaokeSpans = [];
     let currentLyrics = LYRICS; // active lyrics array
+    let idleAnimId = null; // idle visualizer animation
 
     // ===== VISUALIZER =====
     const canvas = document.getElementById('visualizer');
@@ -1183,13 +1189,23 @@
     }
 
     function drawIdleBars() {
-      ctx.fillStyle = '#111';
+      cancelAnimationFrame(idleAnimId);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       const barCount = 48;
       const barWidth = canvas.width / barCount - 1;
-      for (let i = 0; i < barCount; i++) {
-        const h = 5 + Math.sin(Date.now() / 500 + i * 0.3) * 3;
-        ctx.fillRect(i * (barWidth + 1), canvas.height - h, barWidth, h);
+      function anim() {
+        if (isPlaying) return;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < barCount; i++) {
+          const h = 5 + Math.sin(Date.now() / 400 + i * 0.4) * 4;
+          ctx.fillStyle = '#1a1a2e';
+          ctx.fillRect(i * (barWidth + 1), canvas.height - h, barWidth, h);
+        }
+        idleAnimId = requestAnimationFrame(anim);
       }
+      anim();
     }
 
     // ===== CONTROLS =====
@@ -1198,6 +1214,7 @@
       audio.play();
       isPlaying = true;
       buildKaraokeHTML();
+      cancelAnimationFrame(idleAnimId); // stop idle animation
       drawVisualizer();
     });
 
@@ -1306,6 +1323,7 @@
     function resizeCanvas() {
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
+      if (!isPlaying) drawVisualizer();
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
