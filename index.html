@@ -1222,6 +1222,10 @@
       isPlaying = false;
     });
 
+    audio.addEventListener('ended', () => {
+      isPlaying = false;
+    });
+
     stopBtn.addEventListener('click', () => {
       audio.pause();
       audio.currentTime = 0;
@@ -1342,6 +1346,7 @@
           audio.play();
           isPlaying = true;
           buildKaraokeHTML();
+          cancelAnimationFrame(idleAnimId);
           drawVisualizer();
         }
       }
