@@ -863,7 +863,7 @@
       <span class="sing-title" id="singTitle">🎤 SING ALONG</span>
       <div class="sing-topbtns">
         <button class="sing-mini" id="singModeBtn">MODE: AUTO-SYNC</button>
-        <button class="sing-mini" id="singLrcBtn">LRC</button>
+        <button class="sing-mini" id="singLrcBtn">LRC/VTT</button>
         <button class="sing-mini" id="singExitBtn">✕ EXIT</button>
       </div>
     </div>
@@ -886,8 +886,8 @@
     <div class="sing-score" id="singScore" hidden></div>
 
     <div class="sing-lrc-editor" id="lrcEditor" hidden>
-      <span style="color:#00ffff;font-size:18px">LRC EDITOR — paste plain lyrics (one line per row), stamp while the song plays, export .lrc</span>
-      <textarea id="lrcText" spellcheck="false" placeholder="Paste lyrics here, one line per row&#10;or paste an existing .lrc and hit LOAD"></textarea>
+      <span style="color:#00ffff;font-size:18px">LYRICS FILE — paste plain lyrics (stamp while playing) or paste an existing .lrc / .vtt / .srt and LOAD</span>
+      <textarea id="lrcText" spellcheck="false" placeholder="Paste lyrics here, one line per row&#10;or paste an existing .lrc / .vtt / .srt and hit LOAD&#10;plain lines: tap STAMP while the song plays"></textarea>
       <div class="lrc-row">
         <button class="sing-mini" id="lrcStampBtn">⏱ STAMP NEXT LINE</button>
         <button class="sing-mini" id="lrcLoadBtn">▶ LOAD AS SYNC</button>
@@ -1863,6 +1863,103 @@
       return out;
     }
 
+    // WebVTT / SRT cue parser (also accepts bare cue blocks)
+    function cueTime(h, m, s, ms) {
+      return (parseInt(h || '0', 10) * 3600) + (parseInt(m, 10) * 60) + parseInt(s, 10) + parseInt((ms + '00').slice(0, 3), 10) / 1000;
+    }
+
+    function parseCues(text) {
+      const out = [];
+      const rows = text.split(/\r?\n/);
+      const TS = /^\s*(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[.,](\d{1,3})\s*-->\s*(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[.,](\d{1,3})/;
+      for (let i = 0; i < rows.length; i++) {
+        const m = rows[i].match(TS);
+        if (!m) continue;
+        const start = cueTime(m[1], m[2], m[3], m[4]);
+        const end = cueTime(m[5], m[6], m[7], m[8]);
+        const words = [];
+        for (let j = i + 1; j < rows.length && j <= i + 4; j++) {
+          const row = rows[j];
+          if (!row.trim() || TS.test(row) || /^\s*\d+\s*$/.test(row) || /^WEBVTT/i.test(row)) break;
+          words.push(row.replace(/<[^>]+>/g, '').trim());
+          i = j;
+        }
+        const line = words.join(' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        if (line) out.push({ start, end, text: line });
+      }
+      return out;
+    }
+
+    // spread cue text into pseudo-word tokens with interpolated times (no word data available)
+    function wordsFromCueText(text, start, end) {
+      const tokens = text.split(/\s+/);
+      const total = tokens.reduce((a, t) => a + t.length, 0) || 1;
+      let t0 = start;
+      return tokens.map(tok => {
+        const dur = Math.max(0.05, (end - start) * (tok.length / total));
+        const w = { word: tok, start: t0, end: t0 + dur };
+        t0 += dur;
+        return w;
+      });
+    }
+
+    function cuesToLines(cues) {
+      return cues.map(c => ({ start: c.start, end: c.end, text: c.text, words: wordsFromCueText(c.text, c.start, c.end) }));
+    }
+
+    // merge VTT/SRT phrase boundaries with embedded word-level timings:
+    // lines follow the real sung phrases, word highlight stays sample-accurate
+    function mergeCueLines(cues, words) {
+      const TOL = 0.25;
+      const lines = [];
+      let wi = 0;
+      for (const cue of cues) {
+        const group = [];
+        while (wi < words.length && words[wi].start < cue.end - TOL) { group.push(words[wi]); wi++; }
+        if (!group.length && wi < words.length) { group.push(words[wi]); wi++; }
+        if (group.length) {
+          lines.push({ start: group[0].start, end: group[group.length - 1].end, words: group, text: group.map(w => w.word).join(' ') });
+        }
+      }
+      if (wi < words.length) {
+        const rest = words.slice(wi);
+        lines.push({ start: rest[0].start, end: rest[rest.length - 1].end, words: rest, text: rest.map(w => w.word).join(' ') });
+      }
+      return lines;
+    }
+
+    // probe <basename>.vtt / .srt next to the mp3 — drop-in synced lyrics for any track
+    let probeSeq = 0;
+    const probeCache = {};
+    async function probeTrackCues(src, hasEmbeddedWords) {
+      const base = (decodeURIComponent(src || '').split('/').pop() || '').replace(/\.mp3$/i, '');
+      if (!base || probeCache[base] !== undefined) return;
+      const seq = ++probeSeq;
+      probeCache[base] = null;
+      for (const ext of ['vtt', 'srt']) {
+        try {
+          const res = await fetch(encodeURI(base + '.' + ext));
+          if (!res.ok) continue;
+          const cues = parseCues(await res.text());
+          if (!cues.length) continue;
+          probeCache[base] = cues;
+          if (seq !== probeSeq || !singOpen) return; // track switched / overlay closed
+          const src2 = decodeURIComponent(audio.src || '');
+          if (!src2.includes(base)) return;
+          if (hasEmbeddedWords && base.includes('1983') && !src2.includes('Madonna')) {
+            singLines = mergeCueLines(cues, LYRICS);
+          } else if (!sessionLRC.length) {
+            singLines = cuesToLines(cues);
+          } else {
+            return;
+          }
+          singHasTimes = true;
+          if (singMode === 'AUTO') { singLineIdx = -1; renderLines(-1); }
+          return;
+        } catch (e) { /* file:// or 404 — fine */ }
+      }
+    }
+
     function lrcTime(s) {
       const m = Math.floor(s / 60);
       const sec = Math.floor(s % 60);
@@ -1886,7 +1983,8 @@
       singTapIdx = -1;
       updateModeBtn();
       updateTapzone();
-      renderLines(singMode === 'TAP' ? -1 : -1);
+      renderLines(-1);
+      probeTrackCues(audio.src, !!words);
     }
 
     function updateModeBtn() {
@@ -2181,11 +2279,13 @@
     });
 
     document.getElementById('lrcLoadBtn').addEventListener('click', () => {
-      const parsed = parseLRC(lrcText.value);
-      if (!parsed.length) { lrcStatus.textContent = 'no [mm:ss.xx] timestamps found — STAMP lines first'; return; }
-      sessionLRC = parsed;
+      let parsed = parseLRC(lrcText.value);
+      let kind = '.lrc';
+      if (!parsed.length) { parsed = parseCues(lrcText.value); kind = ' cue file'; }
+      if (!parsed.length) { lrcStatus.textContent = 'no [mm:ss.xx] or --> cues found — STAMP lines first'; return; }
+      sessionLRC = parsed.length && parsed[0].words ? parsed : cuesToLines(parsed);
       buildSingLines();
-      lrcStatus.textContent = `loaded ${parsed.length} synced lines — MODE set to AUTO-SYNC`;
+      lrcStatus.textContent = `loaded ${parsed.length} synced lines from ${kind} — MODE set to AUTO-SYNC`;
       lrcEditor.hidden = true;
     });
 
