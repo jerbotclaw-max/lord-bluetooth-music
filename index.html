@@ -475,6 +475,256 @@
     .kw.jeremy.upcoming { color: #008b8b; }
     .kw.chorus.upcoming { color: #8b8b00; }
 
+    /* ===== SING-ALONG MODE ===== */
+    [hidden] { display: none !important; }
+
+    .sing-strip {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 5px;
+      background: #c0c0c0;
+    }
+
+    .sing-toggle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      padding: 6px 10px;
+      background: #c0c0c0;
+      color: #000;
+      border: 2px solid;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      border-right-color: #404040;
+      border-bottom-color: #404040;
+      cursor: pointer;
+      text-shadow: none;
+    }
+
+    .sing-toggle:active {
+      border-top-color: #404040;
+      border-left-color: #404040;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    .sing-toggle.on {
+      background: #000080;
+      color: #ff00ff;
+      text-shadow: 0 0 6px #ff00ff;
+    }
+
+    #singOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(ellipse at 50% 30%, #14061e 0%, #050508 60%, #000 100%);
+      color: #fff;
+      padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom));
+      gap: 8px;
+    }
+
+    .sing-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sing-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      background: linear-gradient(90deg, #ff00ff, #00ffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sing-topbtns { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .sing-mini {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      padding: 7px 9px;
+      background: #14141e;
+      color: #00ffff;
+      border: 1px solid #00ffff;
+      cursor: pointer;
+      text-shadow: none;
+    }
+
+    .sing-mini.on {
+      background: #00ffff;
+      color: #000;
+      text-shadow: none;
+    }
+
+    .sing-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 2.2vmin;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .sing-line {
+      font-family: 'VT323', monospace;
+      letter-spacing: 2px;
+      width: 100%;
+      max-width: 1100px;
+      transition: opacity 0.2s;
+    }
+
+    .sing-line:not(.has) { opacity: 0.25; min-height: 1em; }
+
+    .sing-prev, .sing-next {
+      font-size: clamp(18px, 4vmin, 34px);
+      color: #7a7a8a;
+    }
+
+    .sing-current {
+      font-size: clamp(30px, 9vmin, 88px);
+      line-height: 1.15;
+      color: #fff;
+      text-shadow: 0 0 18px rgba(255, 0, 255, 0.55), 0 0 42px rgba(0, 255, 255, 0.3);
+    }
+
+    .sing-current .sw { transition: color 0.08s, text-shadow 0.08s; }
+    .sing-current .sw.lit {
+      color: #ffe600;
+      text-shadow: 0 0 14px #ffe600, 0 0 34px rgba(255, 230, 0, 0.5);
+    }
+
+    .sing-tapzone {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(10px, 2.4vmin, 14px);
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 18px 10px;
+      background: rgba(255, 0, 255, 0.08);
+      color: #ff9fff;
+      border: 2px dashed #ff00ff;
+      cursor: pointer;
+      text-shadow: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .sing-tapzone:active { background: rgba(255, 0, 255, 0.25); }
+
+    .sing-micpanel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 6px 0;
+    }
+
+    #vuCanvas {
+      width: 220px;
+      height: 44px;
+      background: #000;
+      border: 1px solid #333;
+    }
+
+    .sing-crowd {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: #00ffff;
+    }
+
+    .sing-crowd-bar {
+      width: 120px;
+      height: 12px;
+      background: #111;
+      border: 1px solid #00ffff;
+      overflow: hidden;
+    }
+
+    #crowdFill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00ffff, #ff00ff, #ffe600);
+      transition: width 0.08s linear;
+    }
+
+    .sing-privacy {
+      font-family: 'VT323', monospace;
+      font-size: 13px;
+      color: #555;
+      width: 100%;
+      text-align: center;
+    }
+
+    .sing-score {
+      font-family: 'VT323', monospace;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #ffe600;
+      padding: 12px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90vw;
+      box-shadow: 0 0 40px rgba(255, 230, 0, 0.4);
+    }
+
+    .score-big {
+      font-size: clamp(34px, 10vmin, 72px);
+      color: #ffe600;
+      text-shadow: 0 0 20px #ffe600;
+    }
+
+    .score-bar { display: flex; align-items: center; gap: 8px; font-size: 18px; color: #aaa; }
+    .score-bar .sbar { flex: 1; height: 8px; background: #222; min-width: 120px; }
+    .score-bar .sbar > i { display: block; height: 100%; background: #ff00ff; }
+
+    .sing-lrc-editor {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(560px, 92vw);
+      max-height: 80%;
+      overflow: auto;
+      background: #0b0b12;
+      border: 2px solid #00ffff;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: 'VT323', monospace;
+    }
+
+    .sing-lrc-editor textarea {
+      width: 100%;
+      height: 180px;
+      background: #000;
+      color: #7dff7d;
+      border: 1px solid #333;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 8px;
+      resize: vertical;
+    }
+
+    .sing-lrc-editor .lrc-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .lrc-status { font-size: 14px; color: #888; min-height: 1.2em; }
+
     /* ===== VISUALIZER CANVAS ===== */
     #visualizer {
       image-rendering: auto;
@@ -585,6 +835,12 @@
         <span class="volume-label">🔊</span>
         <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
       </div>
+
+      <!-- Sing-Along toggle strip -->
+      <div class="sing-strip">
+        <button class="sing-toggle" id="singBtn">🎤 SING ALONG</button>
+        <span class="sing-hint">karaoke view · mic stays on-device</span>
+      </div>
     </div>
 
     <!-- Karaoke Display -->
@@ -597,7 +853,48 @@
 
     <div class="credits">
       Lord Bluetooth Music Page<br>
-      <a href="https://github.com/jerbotclaw-max/lord-bluetooth-music">View on GitHub</a>
+      <a href="https://github.com/jerbotclaw-max/lord-bluetooth-music">View on GitHub</a> · <a href="1983.lrc">1983.lrc</a>
+    </div>
+  </div>
+
+  <!-- ===== SING-ALONG OVERLAY ===== -->
+  <div id="singOverlay" hidden>
+    <div class="sing-top">
+      <span class="sing-title" id="singTitle">🎤 SING ALONG</span>
+      <div class="sing-topbtns">
+        <button class="sing-mini" id="singModeBtn">MODE: AUTO-SYNC</button>
+        <button class="sing-mini" id="singLrcBtn">LRC</button>
+        <button class="sing-mini" id="singExitBtn">✕ EXIT</button>
+      </div>
+    </div>
+
+    <div class="sing-stage">
+      <div class="sing-line sing-prev" id="singPrev"></div>
+      <div class="sing-line sing-current" id="singCurrent"></div>
+      <div class="sing-line sing-next" id="singNext"></div>
+    </div>
+
+    <button class="sing-tapzone" id="singTapzone">TAP HERE / SPACE ▸ NEXT LINE</button>
+
+    <div class="sing-micpanel">
+      <button class="sing-mini" id="singMicBtn">🎤 ENABLE MIC</button>
+      <canvas id="vuCanvas" width="220" height="44"></canvas>
+      <div class="sing-crowd"><span>CROWD</span><div class="sing-crowd-bar"><div id="crowdFill"></div></div></div>
+      <span class="sing-privacy">mic audio never leaves this device — party science™, nothing uploads</span>
+    </div>
+
+    <div class="sing-score" id="singScore" hidden></div>
+
+    <div class="sing-lrc-editor" id="lrcEditor" hidden>
+      <span style="color:#00ffff;font-size:18px">LRC EDITOR — paste plain lyrics (one line per row), stamp while the song plays, export .lrc</span>
+      <textarea id="lrcText" spellcheck="false" placeholder="Paste lyrics here, one line per row&#10;or paste an existing .lrc and hit LOAD"></textarea>
+      <div class="lrc-row">
+        <button class="sing-mini" id="lrcStampBtn">⏱ STAMP NEXT LINE</button>
+        <button class="sing-mini" id="lrcLoadBtn">▶ LOAD AS SYNC</button>
+        <button class="sing-mini" id="lrcExportBtn">⬇ EXPORT .LRC</button>
+        <button class="sing-mini" id="lrcCloseBtn">✕ CLOSE</button>
+      </div>
+      <div class="lrc-status" id="lrcStatus"></div>
     </div>
   </div>
 
@@ -1274,6 +1571,7 @@
       audio.load();
       currentWordIndex = -1;
       buildKaraokeHTML();
+      if (typeof singOpen !== 'undefined' && singOpen) { sessionLRC = []; buildSingLines(); }
       if (isPlaying) {
         initAudioContext(); // reconnect Web Audio API after track switch
         audio.play();
@@ -1489,6 +1787,422 @@
       return `${m}:${sec.toString().padStart(2, '0')}`;
     }
 
+    // ============================================================
+    // ===== SING-ALONG MODE (karaoke view + mic + party-science) =====
+    // ============================================================
+    const singOverlay = document.getElementById('singOverlay');
+    const singTitle = document.getElementById('singTitle');
+    const singPrev = document.getElementById('singPrev');
+    const singCurrent = document.getElementById('singCurrent');
+    const singNext = document.getElementById('singNext');
+    const singTapzone = document.getElementById('singTapzone');
+    const singModeBtn = document.getElementById('singModeBtn');
+    const singMicBtn = document.getElementById('singMicBtn');
+    const singExitBtn = document.getElementById('singExitBtn');
+    const singLrcBtn = document.getElementById('singLrcBtn');
+    const singScore = document.getElementById('singScore');
+    const vuCanvas = document.getElementById('vuCanvas');
+    const vctx = vuCanvas.getContext('2d');
+    const crowdFill = document.getElementById('crowdFill');
+    const lrcEditor = document.getElementById('lrcEditor');
+    const lrcText = document.getElementById('lrcText');
+    const lrcStatus = document.getElementById('lrcStatus');
+    const singBtn = document.getElementById('singBtn');
+
+    let singOpen = false;
+    let singLines = [];          // [{start,end,text,words:[{word,start,end}]}]
+    let singHasTimes = false;
+    let singMode = 'AUTO';       // AUTO = timestamp sync, TAP = human advances
+    let singLineIdx = -1;
+    let singTapIdx = -1;
+    let curSpans = [];
+    let singRaf = null;
+    let sessionLRC = [];         // lines loaded via LRC editor (per track)
+
+    // mic + scoring state
+    let micStream = null, micCtx = null, micAnalyser = null;
+    let micTimeBuf = null, micFreqBuf = null;
+    let micOn = false;
+    let crowdLevel = 0;
+    let scoring = false;
+    let scoreTicks = 0, singTicks = 0, pitchTicks = 0;
+    let pitchVals = [];
+    let lastPitchAt = 0;
+
+    // ----- line building: group word timings into singable lines -----
+    function linesFromWords(words) {
+      const GAP = 0.9, MAXW = 12;
+      const lines = [];
+      let cur = null;
+      for (const w of words) {
+        if (!cur || (w.start - cur.end > GAP) || cur.words.length >= MAXW) {
+          cur = { start: w.start, end: w.end, words: [] };
+          lines.push(cur);
+        }
+        cur.end = Math.max(cur.end, w.end);
+        cur.words.push(w);
+      }
+      lines.forEach(l => { l.text = l.words.map(w => w.word).join(' '); });
+      return lines;
+    }
+
+    // ----- LRC parse / format -----
+    function parseLRC(text) {
+      const out = [];
+      for (const raw of text.split(/\r?\n/)) {
+        const m = raw.match(/^\s*\[(\d+):(\d+)(?:[.:](\d+))?\]\s*(.*)$/);
+        if (m && m[4].trim()) {
+          const frac = m[3] ? parseFloat('0.' + m[3]) : 0;
+          const start = parseInt(m[1], 10) * 60 + parseInt(m[2], 10) + frac;
+          const line = m[4].trim();
+          out.push({ start, end: start + 4, text: line, words: line.split(/\s+/).map(wd => ({ word: wd, start, end: start + 4 })) });
+        }
+      }
+      out.sort((a, b) => a.start - b.start);
+      for (let i = 0; i < out.length - 1; i++) out[i].end = Math.min(out[i].end, out[i + 1].start);
+      return out;
+    }
+
+    function lrcTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      const cs = Math.floor((s % 1) * 100);
+      return `[${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}.${cs.toString().padStart(2, '0')}]`;
+    }
+
+    // ----- build lines for the current track -----
+    function buildSingLines() {
+      singScore.hidden = true;
+      const src = decodeURIComponent(audio.src || '');
+      let words = null;
+      if (src.includes('Madonna')) words = MADONNA_LYRICS;
+      else if (src.includes('Anthem')) words = ANTHEM_LYRICS;
+      else if (src.includes('1983.mp3')) words = LYRICS;
+      singLines = words ? linesFromWords(words) : [];
+      singHasTimes = singLines.length > 0;
+      if (sessionLRC.length) { singLines = sessionLRC; singHasTimes = true; }
+      singMode = singHasTimes ? 'AUTO' : 'TAP';
+      singLineIdx = -1;
+      singTapIdx = -1;
+      updateModeBtn();
+      updateTapzone();
+      renderLines(singMode === 'TAP' ? -1 : -1);
+    }
+
+    function updateModeBtn() {
+      singModeBtn.textContent = singMode === 'AUTO' ? 'MODE: AUTO-SYNC' : 'MODE: TAP';
+      singModeBtn.classList.toggle('on', singMode === 'TAP');
+    }
+
+    function updateTapzone() {
+      const tap = singMode === 'TAP';
+      singTapzone.style.display = tap ? 'block' : 'none';
+      if (!tap) singTapzone.setAttribute('aria-hidden', 'true');
+      if (tap && singLines.length === 0) {
+        singTapzone.textContent = 'NO LYRICS YET — TAP / SPACE ON THE BEAT (add lyrics via LRC)';
+      } else if (tap) {
+        singTapzone.textContent = 'TAP HERE / SPACE ▸ NEXT LINE';
+      }
+    }
+
+    // ----- rendering -----
+    function renderLines(idx) {
+      singLineIdx = idx;
+      fillLine(singPrev, singLines[idx - 1], 'prev');
+      fillLine(singCurrent, singLines[idx], 'cur');
+      fillLine(singNext, singLines[idx + 1], 'next');
+      updateLit();
+    }
+
+    function fillLine(el, line, kind) {
+      el.innerHTML = '';
+      el.classList.toggle('has', !!line);
+      if (!line) return;
+      line.words.forEach(w => {
+        const s = document.createElement('span');
+        s.className = 'sw';
+        s.textContent = w.word;
+        el.appendChild(s);
+      });
+      if (kind === 'cur') curSpans = Array.from(el.children);
+    }
+
+    function updateLit() {
+      if (!curSpans.length) return;
+      const line = singLines[singLineIdx];
+      if (!line) return;
+      const t = audio.currentTime;
+      let active;
+      if (singMode === 'TAP' || singLineIdx !== currentAutoIdx()) {
+        active = line.words.length; // full line lit when human-driven or done
+      } else {
+        const hasWordTimes = line.words.length > 1 && line.words[1].start !== line.words[0].start;
+        if (hasWordTimes) {
+          active = line.words.filter(w => t >= w.start).length;
+        } else {
+          const dur = Math.max(0.6, line.end - line.start);
+          active = Math.ceil(Math.min(1, Math.max(0, (t - line.start) / dur)) * line.words.length);
+        }
+      }
+      for (let i = 0; i < curSpans.length; i++) curSpans[i].classList.toggle('lit', i < active);
+    }
+
+    function currentAutoIdx() {
+      const t = audio.currentTime;
+      for (let i = singLines.length - 1; i >= 0; i--) if (t >= singLines[i].start) return i;
+      return -1;
+    }
+
+    function singLoop() {
+      if (!singOpen) return;
+      singRaf = requestAnimationFrame(singLoop);
+      if (singMode === 'AUTO' && singLines.length) {
+        const idx = currentAutoIdx();
+        if (idx !== singLineIdx) renderLines(idx);
+        else updateLit();
+      }
+      if (micOn) drawVU();
+    }
+
+    // ----- open / close -----
+    singBtn.addEventListener('click', () => {
+      singOpen = true;
+      singBtn.classList.add('on');
+      singOverlay.hidden = false;
+      singTitle.textContent = '🎤 ' + (document.title || 'SING ALONG');
+      buildSingLines();
+      cancelAnimationFrame(singRaf);
+      singLoop();
+      if (singOverlay.requestFullscreen) singOverlay.requestFullscreen().catch(() => {});
+    });
+
+    singExitBtn.addEventListener('click', closeSing);
+
+    function closeSing() {
+      singOpen = false;
+      singOverlay.hidden = true;
+      singBtn.classList.remove('on');
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      cancelAnimationFrame(singRaf);
+      scoring = false;
+    }
+
+    // ----- mode / tap / keyboard -----
+    singModeBtn.addEventListener('click', () => {
+      const next = singMode === 'AUTO' ? 'TAP' : 'AUTO';
+      if (next === 'AUTO' && !singHasTimes) return; // nothing to sync to
+      singMode = next;
+      if (singMode === 'TAP') singTapIdx = Math.max(-1, singLineIdx);
+      updateModeBtn();
+      updateTapzone();
+      renderLines(singMode === 'TAP' ? singTapIdx : currentAutoIdx());
+    });
+
+    function advanceTap() {
+      if (singTapIdx >= singLines.length - 1) return;
+      singTapIdx++;
+      renderLines(singTapIdx);
+    }
+
+    singTapzone.addEventListener('click', advanceTap);
+
+    // ----- microphone + VU + crowd meter + party science -----
+    singMicBtn.addEventListener('click', async () => {
+      if (micOn) { stopMic(); return; }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        singMicBtn.textContent = '🎤 MIC NEEDS HTTPS + MODERN BROWSER';
+        setTimeout(() => { if (!micOn) singMicBtn.textContent = '🎤 ENABLE MIC'; }, 3000);
+        return;
+      }
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true },
+          video: false
+        });
+        micCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (micCtx.state === 'suspended') micCtx.resume();
+        const srcNode = micCtx.createMediaStreamSource(micStream);
+        micAnalyser = micCtx.createAnalyser();
+        micAnalyser.fftSize = 2048;
+        micAnalyser.smoothingTimeConstant = 0.45;
+        srcNode.connect(micAnalyser);
+        micTimeBuf = new Uint8Array(micAnalyser.fftSize);
+        micFreqBuf = new Uint8Array(micAnalyser.frequencyBinCount);
+        micOn = true;
+        singMicBtn.textContent = '🎤 MIC ON — TAP TO STOP';
+        singMicBtn.classList.add('on');
+        startScoring();
+      } catch (err) {
+        singMicBtn.textContent = err && err.name === 'NotAllowedError' ? '🎤 MIC BLOCKED — CHECK PERMISSIONS' : '🎤 MIC UNAVAILABLE';
+        setTimeout(() => { if (!micOn) singMicBtn.textContent = '🎤 ENABLE MIC'; }, 3000);
+      }
+    });
+
+    function stopMic() {
+      micOn = false;
+      if (micStream) micStream.getTracks().forEach(t => t.stop());
+      if (micCtx) micCtx.close().catch(() => {});
+      micStream = null; micCtx = null; micAnalyser = null;
+      crowdLevel = 0;
+      crowdFill.style.width = '0%';
+      vctx.clearRect(0, 0, vuCanvas.width, vuCanvas.height);
+      singCurrent.style.filter = '';
+      singMicBtn.textContent = '🎤 ENABLE MIC';
+      singMicBtn.classList.remove('on');
+    }
+
+    function drawVU() {
+      micAnalyser.getByteFrequencyData(micFreqBuf);
+      const w = vuCanvas.width, h = vuCanvas.height, n = 18;
+      const bw = w / n - 2;
+      vctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < n; i++) {
+        const v = micFreqBuf[Math.floor(i * micFreqBuf.length / n / 2)] / 255;
+        const bh = Math.max(2, v * h);
+        vctx.fillStyle = `hsl(${300 - i * 7}, 100%, ${45 + v * 25}%)`;
+        vctx.fillRect(i * (bw + 2), h - bh, bw, bh);
+      }
+      micAnalyser.getByteTimeDomainData(micTimeBuf);
+      let sum = 0;
+      for (let i = 0; i < micTimeBuf.length; i++) { const v = (micTimeBuf[i] - 128) / 128; sum += v * v; }
+      const rms = Math.sqrt(sum / micTimeBuf.length);
+      crowdLevel = Math.max(rms * 3.2, crowdLevel * 0.93); // fast attack, slow release
+      crowdFill.style.width = Math.min(100, crowdLevel * 100) + '%';
+      singCurrent.style.filter = crowdLevel > 0.02 ? `drop-shadow(0 0 ${(4 + crowdLevel * 60).toFixed(1)}px rgba(255,0,255,0.85))` : '';
+      if (scoring) {
+        scoreTicks++;
+        if (rms > 0.022) {
+          singTicks++;
+          const now = performance.now();
+          if (now - lastPitchAt > 90) {
+            lastPitchAt = now;
+            const p = detectPitch(micTimeBuf, micCtx ? micCtx.sampleRate : 48000);
+            if (p.voiced) {
+              pitchTicks++;
+              pitchVals.push(p.freq);
+              if (pitchVals.length > 600) pitchVals.shift();
+            }
+          }
+        }
+      }
+    }
+
+    // basic autocorrelation pitch detection — PARTY SCIENCE™, not studio gear
+    function detectPitch(buf, sampleRate) {
+      const n = buf.length;
+      let sum = 0;
+      const f = new Float32Array(n);
+      for (let i = 0; i < n; i++) { f[i] = (buf[i] - 128) / 128; sum += f[i] * f[i]; }
+      const rms = Math.sqrt(sum / n);
+      if (rms < 0.02) return { voiced: false, rms };
+      const minLag = Math.max(2, Math.floor(sampleRate / 600));
+      const maxLag = Math.min(n - 2, Math.floor(sampleRate / 70));
+      if (maxLag <= minLag) return { voiced: false, rms };
+      const win = n - maxLag;
+      let best = 0, bestLag = -1;
+      for (let lag = minLag; lag <= maxLag; lag++) {
+        let corr = 0, e1 = 0, e2 = 0;
+        for (let i = 0; i < win; i++) {
+          const a = f[i], b = f[i + lag];
+          corr += a * b; e1 += a * a; e2 += b * b;
+        }
+        const c = corr / (Math.sqrt(e1 * e2) || 1e-9);
+        if (c > best) { best = c; bestLag = lag; }
+      }
+      if (best > 0.35 && bestLag > 0) {
+        const freq = sampleRate / bestLag;
+        if (freq >= 70 && freq <= 600) return { voiced: true, freq, rms };
+      }
+      return { voiced: false, rms };
+    }
+
+    function startScoring() {
+      scoreTicks = 0; singTicks = 0; pitchTicks = 0;
+      pitchVals = [];
+      scoring = true;
+      singScore.hidden = true;
+    }
+
+    function finishScoring() {
+      if (!scoring) return;
+      scoring = false;
+      singScore.hidden = false;
+      if (scoreTicks < 10 || singTicks < 5) {
+        singScore.innerHTML = '<div class="score-big">🎤—</div><div>too quiet to score — enable the mic and sing louder!</div><div style="color:#666">party science™: for fun, not real pitch detection</div>';
+        return;
+      }
+      const engage = Math.min(1, singTicks / scoreTicks);
+      const pitchT = Math.min(1, pitchTicks / singTicks);
+      let stab = 0;
+      if (pitchVals.length > 4) {
+        const sorted = [...pitchVals].sort((a, b) => a - b);
+        const q1 = sorted[Math.floor(sorted.length * 0.25)];
+        const q3 = sorted[Math.floor(sorted.length * 0.75)];
+        const med = sorted[Math.floor(sorted.length / 2)];
+        stab = med > 0 ? Math.max(0, 1 - Math.min(1, (q3 - q1) / (2 * med))) : 0;
+      }
+      const pct = Math.round(100 * (0.5 * engage + 0.3 * pitchT + 0.2 * stab));
+      const title = pct >= 85 ? '🏆 GOLDEN THROAT' : pct >= 70 ? '🔥 CROWD PLEASER' : pct >= 50 ? '🚿 SHOWER-READY' : '🦖 ENTHUSIASTIC';
+      singScore.innerHTML =
+        '<div style="font-size:20px;color:#fff">PARTY SCORE</div>' +
+        `<div class="score-big">${pct}%</div>` +
+        `<div style="font-size:22px;color:#ffe600">${title}</div>` +
+        `<div class="score-bar"><span>energy</span><div class="sbar"><i style="width:${Math.round(engage * 100)}%"></i></div></div>` +
+        `<div class="score-bar"><span>pitch</span><div class="sbar"><i style="width:${Math.round(pitchT * 100)}%"></i></div></div>` +
+        `<div class="score-bar"><span>stability</span><div class="sbar"><i style="width:${Math.round(stab * 100)}%"></i></div></div>` +
+        '<div style="color:#666;margin-top:6px">party science™ — autocorrelation + vibes, not real pitch detection</div>';
+    }
+
+    audio.addEventListener('ended', () => { if (singOpen && micOn) finishScoring(); });
+
+    // ----- LRC editor -----
+    singLrcBtn.addEventListener('click', () => {
+      lrcEditor.hidden = !lrcEditor.hidden;
+      if (!lrcEditor.hidden && !lrcText.value.trim()) {
+        const src = decodeURIComponent(audio.src || '');
+        const name = src.split('/').pop() || 'track';
+        lrcText.placeholder = `[00:00.00] ${name.replace(/\.mp3$/i, '')} — one lyric line per row\n[00:12.34] stamped lines look like this\nor just paste plain lines and tap STAMP while the song plays`;
+      }
+    });
+
+    document.getElementById('lrcCloseBtn').addEventListener('click', () => { lrcEditor.hidden = true; });
+
+    document.getElementById('lrcStampBtn').addEventListener('click', () => {
+      const lines = lrcText.value.split(/\r?\n/);
+      let idx = -1;
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim() && !/^\s*\[\d+:\d+/.test(lines[i])) { idx = i; break; }
+      }
+      if (idx === -1) { lrcStatus.textContent = 'every non-empty line is stamped already ✔'; return; }
+      lines[idx] = lrcTime(audio.currentTime) + lines[idx].trim();
+      lrcText.value = lines.join('\n');
+      const done = lines.filter(l => /^\s*\[\d+:\d+/.test(l)).length;
+      lrcStatus.textContent = `stamped [${formatTime(audio.currentTime)}] — ${done} line(s) stamped`;
+    });
+
+    document.getElementById('lrcLoadBtn').addEventListener('click', () => {
+      const parsed = parseLRC(lrcText.value);
+      if (!parsed.length) { lrcStatus.textContent = 'no [mm:ss.xx] timestamps found — STAMP lines first'; return; }
+      sessionLRC = parsed;
+      buildSingLines();
+      lrcStatus.textContent = `loaded ${parsed.length} synced lines — MODE set to AUTO-SYNC`;
+      lrcEditor.hidden = true;
+    });
+
+    document.getElementById('lrcExportBtn').addEventListener('click', () => {
+      const src = decodeURIComponent(audio.src || '');
+      const name = (src.split('/').pop() || 'untitled').replace(/\.mp3$/i, '') + '.lrc';
+      const blob = new Blob([lrcText.value + '\n'], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      lrcStatus.textContent = 'exported ' + name;
+    });
+
     // Init
     volumeSlider.style.setProperty('--vol', '70%');
     audio.volume = 0.7;
@@ -1507,6 +2221,11 @@
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
+        if (typeof singOpen !== 'undefined' && singOpen && singMode === 'TAP' && !e.target.closest('textarea')) {
+          e.preventDefault();
+          advanceTap();
+          return;
+        }
         e.preventDefault();
         if (isPlaying) {
           audio.pause();
