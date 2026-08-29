@@ -725,6 +725,52 @@
     .sing-lrc-editor .lrc-row { display: flex; gap: 6px; flex-wrap: wrap; }
     .lrc-status { font-size: 14px; color: #888; min-height: 1.2em; }
 
+    /* ===== T-PAIN (autotune) ===== */
+    .sing-atrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 2px 0;
+    }
+
+    .sing-select {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      padding: 7px 4px;
+      background: #14141e;
+      color: #ffe600;
+      border: 1px solid #ffe600;
+      cursor: pointer;
+    }
+
+    .at-note {
+      font-family: 'VT323', monospace;
+      font-size: 19px;
+      color: #ffe600;
+      min-width: 96px;
+      text-align: center;
+      text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+    }
+
+    .at-lab {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: #ff00ff;
+    }
+
+    #atMix { width: 90px; }
+
+    #atPlayback {
+      width: min(420px, 90vw);
+      height: 32px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    a.sing-mini { text-decoration: none; display: inline-block; }
+
     /* ===== VISUALIZER CANVAS ===== */
     #visualizer {
       image-rendering: auto;
@@ -882,6 +928,30 @@
       <div class="sing-crowd"><span>CROWD</span><div class="sing-crowd-bar"><div id="crowdFill"></div></div></div>
       <span class="sing-privacy">mic audio never leaves this device — party science™, nothing uploads</span>
     </div>
+
+    <!-- T-Pain (autotune) row -->
+    <div class="sing-atrow">
+      <button class="sing-mini" id="atBtn">🔧 T-PAIN: OFF</button>
+      <select class="sing-select" id="atKey" title="key"></select>
+      <select class="sing-select" id="atScale">
+        <option value="major">MAJOR</option>
+        <option value="minor">MINOR</option>
+      </select>
+      <select class="sing-select" id="atStrength">
+        <option value="1">FULL SNAP</option>
+        <option value="0.55">LIGHT</option>
+      </select>
+      <span class="at-note" id="atNote">—</span>
+    </div>
+    <div class="sing-atrow">
+      <span class="at-lab">WET</span>
+      <input type="range" id="atMix" min="0" max="100" value="70">
+      <button class="sing-mini" id="atRecBtn">⏺ RECORD TAKE</button>
+      <button class="sing-mini" id="atRenderBtn" hidden>🎛 RENDER T-PAIN TAKE</button>
+      <a class="sing-mini" id="atDownload" hidden>⬇ WAV</a>
+    </div>
+    <audio id="atPlayback" controls hidden></audio>
+    <span class="sing-privacy">T-Pain mode: ~90ms latency · snaps voice to the chosen key · party toy, not studio gear · HEADPHONES recommended (open speakers will howl)</span>
 
     <div class="sing-score" id="singScore" hidden></div>
 
@@ -2105,12 +2175,12 @@
     singTapzone.addEventListener('click', advanceTap);
 
     // ----- microphone + VU + crowd meter + party science -----
-    singMicBtn.addEventListener('click', async () => {
-      if (micOn) { stopMic(); return; }
+    async function ensureMic() {
+      if (micOn) return true;
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         singMicBtn.textContent = '🎤 MIC NEEDS HTTPS + MODERN BROWSER';
         setTimeout(() => { if (!micOn) singMicBtn.textContent = '🎤 ENABLE MIC'; }, 3000);
-        return;
+        return false;
       }
       try {
         micStream = await navigator.mediaDevices.getUserMedia({
@@ -2130,13 +2200,22 @@
         singMicBtn.textContent = '🎤 MIC ON — TAP TO STOP';
         singMicBtn.classList.add('on');
         startScoring();
+        return true;
       } catch (err) {
         singMicBtn.textContent = err && err.name === 'NotAllowedError' ? '🎤 MIC BLOCKED — CHECK PERMISSIONS' : '🎤 MIC UNAVAILABLE';
         setTimeout(() => { if (!micOn) singMicBtn.textContent = '🎤 ENABLE MIC'; }, 3000);
+        return false;
       }
+    }
+
+    singMicBtn.addEventListener('click', async () => {
+      if (micOn) { stopMic(); return; }
+      await ensureMic();
     });
 
     function stopMic() {
+      stopAutotune();
+      if (atRec && atRec.rec && atRec.rec.state === 'recording') atRec.rec.stop();
       micOn = false;
       if (micStream) micStream.getTracks().forEach(t => t.stop());
       if (micCtx) micCtx.close().catch(() => {});
@@ -2186,6 +2265,7 @@
     }
 
     // basic autocorrelation pitch detection — PARTY SCIENCE™, not studio gear
+    // (same McLeod-style peak pick as the T-Pain detector: first local max ≥ 0.9×max)
     function detectPitch(buf, sampleRate) {
       const n = buf.length;
       let sum = 0;
@@ -2197,7 +2277,8 @@
       const maxLag = Math.min(n - 2, Math.floor(sampleRate / 70));
       if (maxLag <= minLag) return { voiced: false, rms };
       const win = n - maxLag;
-      let best = 0, bestLag = -1;
+      const cs = new Float32Array(maxLag + 2);
+      let cmax = 0;
       for (let lag = minLag; lag <= maxLag; lag++) {
         let corr = 0, e1 = 0, e2 = 0;
         for (let i = 0; i < win; i++) {
@@ -2205,11 +2286,17 @@
           corr += a * b; e1 += a * a; e2 += b * b;
         }
         const c = corr / (Math.sqrt(e1 * e2) || 1e-9);
-        if (c > best) { best = c; bestLag = lag; }
+        cs[lag] = c;
+        if (c > cmax) cmax = c;
       }
-      if (best > 0.35 && bestLag > 0) {
-        const freq = sampleRate / bestLag;
-        if (freq >= 70 && freq <= 600) return { voiced: true, freq, rms };
+      if (cmax < 0.35) return { voiced: false, rms };
+      const thresh = cmax * 0.9;
+      for (let lag = minLag + 1; lag < maxLag; lag++) {
+        if (cs[lag] >= thresh && cs[lag] >= cs[lag - 1] && cs[lag] >= cs[lag + 1]) {
+          const freq = sampleRate / lag;
+          if (freq >= 70 && freq <= 600) return { voiced: true, freq, rms };
+          return { voiced: false, rms };
+        }
       }
       return { voiced: false, rms };
     }
@@ -2301,6 +2388,328 @@
       a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
       lrcStatus.textContent = 'exported ' + name;
+    });
+
+    // ============================================================
+    // ===== T-PAIN MODE (live scale-snapped autotune + offline render) =====
+    // ============================================================
+    const atBtn = document.getElementById('atBtn');
+    const atKey = document.getElementById('atKey');
+    const atScale = document.getElementById('atScale');
+    const atStrength = document.getElementById('atStrength');
+    const atNote = document.getElementById('atNote');
+    const atMix = document.getElementById('atMix');
+    const atRecBtn = document.getElementById('atRecBtn');
+    const atRenderBtn = document.getElementById('atRenderBtn');
+    const atDownload = document.getElementById('atDownload');
+    const atPlayback = document.getElementById('atPlayback');
+
+    const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const SCALE_MAJOR = [0, 2, 4, 5, 7, 9, 11];
+    const SCALE_MINOR = [0, 2, 3, 5, 7, 8, 10];
+    NOTE_NAMES.forEach((n, pc) => {
+      const o = document.createElement('option');
+      o.value = pc;
+      o.textContent = 'KEY ' + n;
+      atKey.appendChild(o);
+    });
+
+    const AT_GRAIN = 2048; // ~43ms @48k → total latency ≈ 2×grain ≈ 90ms
+
+    function midiToName(m) {
+      const n = Math.round(m);
+      return NOTE_NAMES[((n % 12) + 12) % 12] + (Math.floor(n / 12) - 1);
+    }
+
+    function snapTarget(midi, rootPc, minor) {
+      const scale = minor ? SCALE_MINOR : SCALE_MAJOR;
+      const base = Math.round(midi);
+      let best = null, bd = 99;
+      for (let o = -2; o <= 2; o++) {
+        const cand = base + o;
+        const rel = ((cand - rootPc) % 12 + 12) % 12;
+        if (scale.indexOf(rel) !== -1) {
+          const d = Math.abs(cand - midi);
+          if (d < bd) { bd = d; best = cand; }
+        }
+      }
+      return best === null ? midi : best;
+    }
+
+    // normalized autocorrelation pitch detect on Float32 frames (70–700 Hz).
+    // Peak picking is McLeod-style: first LOCAL max ≥ 0.9×global max, ascending —
+    // plain global-max ACF prefers long lags (integer multiples of the period).
+    function acfPitchFloat(buf, sampleRate) {
+      const n = buf.length;
+      let sum = 0;
+      for (let i = 0; i < n; i++) sum += buf[i] * buf[i];
+      const rms = Math.sqrt(sum / n);
+      if (rms < 0.015) return 0;
+      const minLag = Math.max(2, Math.floor(sampleRate / 700));
+      const maxLag = Math.min(n - 2, Math.floor(sampleRate / 70));
+      if (maxLag <= minLag) return 0;
+      const win = n - maxLag;
+      const cs = new Float32Array(maxLag + 2);
+      let cmax = 0;
+      for (let lag = minLag; lag <= maxLag; lag++) {
+        let corr = 0, e1 = 0, e2 = 0;
+        for (let i = 0; i < win; i++) {
+          const a = buf[i], b = buf[i + lag];
+          corr += a * b; e1 += a * a; e2 += b * b;
+        }
+        const c = corr / (Math.sqrt(e1 * e2) || 1e-9);
+        cs[lag] = c;
+        if (c > cmax) cmax = c;
+      }
+      const thresh = cmax * 0.9;
+      for (let lag = minLag + 1; lag < maxLag; lag++) {
+        if (cs[lag] >= thresh && cs[lag] >= cs[lag - 1] && cs[lag] >= cs[lag + 1]) {
+          const f = sampleRate / lag;
+          return f >= 70 && f <= 700 ? f : 0;
+        }
+      }
+      return 0;
+    }
+
+    // 2-tap crossfading delay-line pitch shifter — Hann grains offset by half a
+    // grain sum to exactly unity gain; ratio eases toward target to avoid zips
+    function makeShifterState() {
+      const size = 16384;
+      return { ring: new Float32Array(size), mask: size - 1, w: 0, d: 0, ratio: 1 };
+    }
+
+    function ringRead(st, pos) {
+      const size = st.mask + 1;
+      const p1 = Math.floor(pos);
+      const frac = pos - p1;
+      const i1 = ((p1 % size) + size) % size;
+      const s1 = st.ring[i1], s2 = st.ring[(i1 + 1) & st.mask];
+      return s1 + (s2 - s1) * frac;
+    }
+
+    function shifterProcess(st, inp, out, targetRatio) {
+      st.ratio += (targetRatio - st.ratio) * 0.12;
+      const R = st.ratio, N = AT_GRAIN, M = st.mask;
+      let w = st.w, d = st.d;
+      for (let i = 0; i < inp.length; i++) {
+        st.ring[w & M] = inp[i];
+        d += 1 - R;
+        if (d >= N) d -= N; else if (d < 0) d += N;
+        const dB = d + N / 2 >= N ? d - N / 2 : d + N / 2;
+        const wA = 0.5 - 0.5 * Math.cos(2 * Math.PI * d / N);
+        const wB = 1 - wA;
+        out[i] = wA * ringRead(st, w - d) + wB * ringRead(st, w - dB);
+        w++;
+      }
+      st.w = w; st.d = d;
+    }
+
+    const at = { on: false, nodes: null, st: null, targetRatio: 1, cb: 0, lastInfo: null };
+
+    function applyAtMix() {
+      if (!at.nodes) return;
+      const wet = atMix.value / 100;
+      at.nodes.wet.gain.value = wet;
+      at.nodes.dry.gain.value = 1 - wet;
+    }
+
+    atMix.addEventListener('input', applyAtMix);
+
+    atBtn.addEventListener('click', async () => {
+      if (at.on) { stopAutotune(); return; }
+      if (!micCtx || !micCtx.createScriptProcessor) {
+        atBtn.textContent = '🔧 T-PAIN: UNSUPPORTED HERE';
+        setTimeout(() => { if (!at.on) atBtn.textContent = '🔧 T-PAIN: OFF'; }, 3000);
+        return;
+      }
+      const ok = await ensureMic(); // graceful degrade: mic denied → mode stays off
+      if (!ok) {
+        atBtn.textContent = '🔧 T-PAIN: MIC BLOCKED';
+        setTimeout(() => { if (!at.on) atBtn.textContent = '🔧 T-PAIN: OFF'; }, 3000);
+        return;
+      }
+      startAutotune();
+    });
+
+    function startAutotune() {
+      const ctx = micCtx;
+      const srcNode = ctx.createMediaStreamSource(micStream);
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 70;
+      const sp = ctx.createScriptProcessor(2048, 1, 1);
+      const wet = ctx.createGain();
+      const dry = ctx.createGain();
+      srcNode.connect(hp);
+      hp.connect(sp);
+      sp.connect(wet);
+      wet.connect(ctx.destination);
+      hp.connect(dry);
+      dry.connect(ctx.destination);
+      at.nodes = { srcNode, hp, sp, wet, dry };
+      at.st = makeShifterState();
+      at.targetRatio = 1;
+      at.cb = 0;
+      at.lastInfo = null;
+      applyAtMix();
+
+      const keyPc = () => parseInt(atKey.value, 10);
+      const isMinor = () => atScale.value === 'minor';
+      const strength = () => parseFloat(atStrength.value);
+
+      sp.onaudioprocess = (e) => {
+        const inp = e.inputBuffer.getChannelData(0);
+        const out = e.outputBuffer.getChannelData(0);
+        at.cb++;
+        if (at.cb % 2 === 0) { // ~23Hz pitch updates
+          const f = acfPitchFloat(inp, ctx.sampleRate);
+          if (f > 0) {
+            const midi = 69 + 12 * Math.log2(f / 440);
+            const target = snapTarget(midi, keyPc(), isMinor());
+            const corr = Math.max(-5, Math.min(5, target - midi));
+            at.targetRatio = Math.pow(2, corr * strength() / 12);
+            at.lastInfo = { midi, target };
+          } else {
+            at.targetRatio = 1; // silence → passthrough
+            at.lastInfo = null;
+          }
+        }
+        if (at.cb % 6 === 0) { // ~4Hz UI
+          atNote.textContent = at.lastInfo ?
+            midiToName(at.lastInfo.midi) + '→' + midiToName(at.lastInfo.target) : '—';
+        }
+        shifterProcess(at.st, inp, out, at.targetRatio);
+      };
+
+      at.on = true;
+      atBtn.textContent = '🔧 T-PAIN: ON';
+      atBtn.classList.add('on');
+      atNote.textContent = '—';
+    }
+
+    function stopAutotune() {
+      if (!at.on) return;
+      at.on = false;
+      try {
+        if (at.nodes) {
+          at.nodes.srcNode.disconnect();
+          at.nodes.hp.disconnect();
+          at.nodes.sp.disconnect();
+          at.nodes.wet.disconnect();
+          at.nodes.dry.disconnect();
+        }
+      } catch (e) { /* already gone */ }
+      at.nodes = null;
+      at.st = null;
+      atBtn.textContent = '🔧 T-PAIN: OFF';
+      atBtn.classList.remove('on');
+      atNote.textContent = '—';
+    }
+
+    // ----- take recorder + offline T-Pain render (post-song mode) -----
+    const atRec = { rec: null, chunks: [], blob: null, url: null };
+
+    atRecBtn.addEventListener('click', async () => {
+      if (atRec.rec && atRec.rec.state === 'recording') { atRec.rec.stop(); return; }
+      if (!window.MediaRecorder) {
+        atRecBtn.textContent = '⏺ UNSUPPORTED';
+        setTimeout(() => { atRecBtn.textContent = '⏺ RECORD TAKE'; }, 3000);
+        return;
+      }
+      const ok = await ensureMic();
+      if (!ok) {
+        atRecBtn.textContent = '⏺ MIC BLOCKED';
+        setTimeout(() => { atRecBtn.textContent = '⏺ RECORD TAKE'; }, 3000);
+        return;
+      }
+      const mime = MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : undefined;
+      atRec.chunks = [];
+      atRec.rec = new MediaRecorder(micStream, mime ? { mimeType: mime } : undefined);
+      atRec.rec.ondataavailable = (e) => { if (e.data && e.data.size) atRec.chunks.push(e.data); };
+      atRec.rec.onstop = () => {
+        atRec.blob = new Blob(atRec.chunks, { type: atRec.rec.mimeType || 'audio/webm' });
+        atRecBtn.textContent = '⏺ RECORD TAKE';
+        atRecBtn.classList.remove('on');
+        atRenderBtn.hidden = false;
+      };
+      atRec.rec.start();
+      atRecBtn.textContent = '⏹ STOP TAKE';
+      atRecBtn.classList.add('on');
+    });
+
+    function offlineTune(samples, sr, rootPc, minor, strength) {
+      const st = makeShifterState();
+      const out = new Float32Array(samples.length);
+      const FRAME = 2048, HOP = 512;
+      let target = 1;
+      for (let pos = 0; pos < samples.length; pos += HOP) {
+        const end = Math.min(pos + FRAME, samples.length);
+        let s = 0;
+        for (let i = pos; i < end; i++) s += samples[i] * samples[i];
+        if (Math.sqrt(s / Math.max(1, end - pos)) > 0.02) {
+          const f = acfPitchFloat(samples.subarray(pos, end), sr);
+          if (f > 0) {
+            const midi = 69 + 12 * Math.log2(f / 440);
+            const tgt = snapTarget(midi, rootPc, minor);
+            target = Math.pow(2, Math.max(-5, Math.min(5, tgt - midi)) * strength / 12);
+          }
+        }
+        const cEnd = Math.min(pos + HOP, samples.length);
+        shifterProcess(st, samples.subarray(pos, cEnd), out.subarray(pos, cEnd), target);
+      }
+      return out;
+    }
+
+    function encodeWAV(samples, sr) {
+      const buf = new ArrayBuffer(44 + samples.length * 2);
+      const v = new DataView(buf);
+      const str = (off, s) => { for (let i = 0; i < s.length; i++) v.setUint8(off + i, s.charCodeAt(i)); };
+      str(0, 'RIFF');
+      v.setUint32(4, 36 + samples.length * 2, true);
+      str(8, 'WAVEfmt ');
+      v.setUint32(16, 16, true);
+      v.setUint16(20, 1, true);
+      v.setUint16(22, 1, true);
+      v.setUint32(24, sr, true);
+      v.setUint32(28, sr * 2, true);
+      v.setUint16(32, 2, true);
+      v.setUint16(34, 16, true);
+      str(36, 'data');
+      v.setUint32(40, samples.length * 2, true);
+      for (let i = 0; i < samples.length; i++) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      }
+      return buf;
+    }
+
+    atRenderBtn.addEventListener('click', async () => {
+      if (!atRec.blob) return;
+      atRenderBtn.textContent = '🎛 RENDERING…';
+      try {
+        const buf = await atRec.blob.arrayBuffer();
+        const decoded = await micCtx.decodeAudioData(buf);
+        const shifted = offlineTune(
+          decoded.getChannelData(0), decoded.sampleRate,
+          parseInt(atKey.value, 10), atScale.value === 'minor', parseFloat(atStrength.value)
+        );
+        const wav = encodeWAV(shifted, decoded.sampleRate);
+        if (atRec.url) URL.revokeObjectURL(atRec.url);
+        atRec.url = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
+        atPlayback.src = atRec.url;
+        atPlayback.hidden = false;
+        atDownload.href = atRec.url;
+        atDownload.download = (document.title || 'take').replace(/\s+/g, '-') + '-tpain.wav';
+        atDownload.hidden = false;
+        atRenderBtn.textContent = '🎛 RENDER T-PAIN TAKE';
+      } catch (err) {
+        atRenderBtn.textContent = '🎛 RENDER FAILED (FORMAT?)';
+        setTimeout(() => { atRenderBtn.textContent = '🎛 RENDER T-PAIN TAKE'; }, 3000);
+      }
+    });
+
+    audio.addEventListener('ended', () => {
+      if (atRec.rec && atRec.rec.state === 'recording') atRec.rec.stop();
     });
 
     // Init
